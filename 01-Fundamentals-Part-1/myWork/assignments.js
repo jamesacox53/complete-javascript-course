@@ -39,3 +39,15 @@ if (!isPopLessThanAverage) {
 } else {
     console.log(`${country}'s population is ${avgPopOfACountry - population} below average`);
 }
+
+console.log("I am " + 23 + " years old.");
+
+console.log(23 + " I am years old.");
+
+console.log('13' > '15');
+
+console.log('9' - '5');
+console.log('19' - '13' + '17');
+console.log('19' - '13' + 17);
+console.log('123' < 57);
+console.log(5 + 6 + '4' + 9 - 4 - 2);
