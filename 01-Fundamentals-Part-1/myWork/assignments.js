@@ -1,6 +1,8 @@
 const country = "The United Kingdom";
 const continent = 'Europe';
 let population = 66650000;
+// let population = 600;
+
 
 const isIsland = true;
 const language = 'english';
@@ -28,3 +30,12 @@ const isPopLessThanAverage = population < avgPopOfACountry;
 
 const description = country + " is in " + continent + ", and it's " + population + " people speak " + language;
 console.log(description);
+
+const description2 = `${country} is in ${continent}, and it's ${population} people speak ${language}`;
+console.log(description2);
+
+if (!isPopLessThanAverage) {
+    console.log(`${country}'s population is above average`);
+} else {
+    console.log(`${country}'s population is ${avgPopOfACountry - population} below average`);
+}
