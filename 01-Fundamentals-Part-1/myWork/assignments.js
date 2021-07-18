@@ -117,3 +117,5 @@ switch (language) {
 }
 
 (population > 33000000) ? console.log(`${country}'s population is above average`) : console.log(`${country}'s population is below average`);
+
+// Completed Section 2: JavaScript Fundamentals - Part 1
