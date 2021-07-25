@@ -78,3 +78,19 @@ if (neighbours.includes('Germany')) {
 
 neighbours[neighbours.indexOf('Italy')] = 'Italia';
 console.log(neighbours);
+
+const myCountry = {
+    country: 'England',
+    capital: 'London',
+    language: 'English',
+    population: 55.98,
+    neighbours: ['Scotland', 'Wales']
+};
+
+console.log(`${myCountry.country} has ${myCountry.population} million ${myCountry['language']}-speaking people, ${myCountry.neighbours.length} neighbouring countries and a capital called ${myCountry.capital}.`)
+
+console.log(myCountry.population);
+myCountry.population = myCountry.population + 2;
+console.log(myCountry.population);
+myCountry['population'] = myCountry['population'] - 2;
+console.log(myCountry.population);
