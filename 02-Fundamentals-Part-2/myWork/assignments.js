@@ -17,6 +17,7 @@ function percentageOfWorld1(population) {
 const populationOfChina = 1441;
 const populationOfFrance = 67;
 const populationOfBrazil = 211;
+const populationOfFinland = 6;
 const percentageOfPopChina1 = percentageOfWorld1(populationOfChina);
 const percentageOfPopFrance1 = percentageOfWorld1(populationOfFrance);
 const percentageOfPopBrazil1 = percentageOfWorld1(populationOfBrazil);
@@ -51,3 +52,14 @@ function describePopulation(country, population) {
 console.log(describePopulation('China', populationOfChina));
 console.log(describePopulation('France', populationOfFrance));
 console.log(describePopulation('Brazil', populationOfBrazil));
+
+populations = new Array(populationOfChina, populationOfFinland, populationOfBrazil, populationOfFrance);
+
+if (populations.length >= 4) {
+    console.log(true);
+} else {
+    console.log(false);
+}
+
+percentages = [percentageOfWorld1(populationOfChina), percentageOfWorld1(populationOfFinland), percentageOfWorld1(populationOfBrazil), percentageOfWorld1(populationOfFrance)];
+console.log(percentages);
