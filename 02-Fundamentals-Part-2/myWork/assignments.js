@@ -63,3 +63,18 @@ if (populations.length >= 4) {
 
 percentages = [percentageOfWorld1(populationOfChina), percentageOfWorld1(populationOfFinland), percentageOfWorld1(populationOfBrazil), percentageOfWorld1(populationOfFrance)];
 console.log(percentages);
+
+//Country is France
+neighbours = ['Spain', 'Italy', 'Switzerland', 'Germany', 'Luxembourg', 'Belgium']
+console.log(neighbours);
+neighbours.push('Utopia');
+console.log(neighbours);
+neighbours.pop();
+console.log(neighbours);
+
+if (neighbours.includes('Germany')) {
+    console.log('Probabily a central European country :D.')
+}
+
+neighbours[neighbours.indexOf('Italy')] = 'Italia';
+console.log(neighbours);
