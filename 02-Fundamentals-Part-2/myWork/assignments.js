@@ -34,3 +34,11 @@ percentageOfPopBrazil2 = percentageOfWorld2(populationOfBrazil);
 console.log(percentageOfPopChina2);
 console.log(percentageOfPopFrance2);
 console.log(percentageOfPopBrazil2);
+
+const percentageOfWorld3 = population => (population / 7900) * 100;
+percentageOfPopChina3 = percentageOfWorld3(populationOfChina);
+percentageOfPopFrance3 = percentageOfWorld3(populationOfFrance);
+percentageOfPopBrazil3 = percentageOfWorld3(populationOfBrazil);
+console.log(percentageOfPopChina3);
+console.log(percentageOfPopFrance3);
+console.log(percentageOfPopBrazil3);
