@@ -84,7 +84,19 @@ const myCountry = {
     capital: 'London',
     language: 'English',
     population: 55.98,
-    neighbours: ['Scotland', 'Wales']
+    neighbours: ['Scotland', 'Wales'],
+    // neighbours: [],
+    describe: function () {
+        this.checkIsland();
+        console.log(`${this.country} has ${this.population} million ${this['language']}-speaking people, ${this.neighbours.length} neighbouring countries and a capital called ${this.capital}. ${this.isIsland}`);
+    },
+    checkIsland: function () {
+        if (this.neighbours.length <= 0) {
+            this.isIsland = true;
+        } else {
+            this.isIsland = false;
+        }
+    }
 };
 
 console.log(`${myCountry.country} has ${myCountry.population} million ${myCountry['language']}-speaking people, ${myCountry.neighbours.length} neighbouring countries and a capital called ${myCountry.capital}.`)
@@ -94,3 +106,5 @@ myCountry.population = myCountry.population + 2;
 console.log(myCountry.population);
 myCountry['population'] = myCountry['population'] - 2;
 console.log(myCountry.population);
+
+myCountry.describe();
