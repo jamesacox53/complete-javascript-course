@@ -132,5 +132,15 @@ for (let i = 0; i < listOfNeighbours.length; i++) {
     for (let j = 0; j < listOfNeighbours[i].length; j++) {
         console.log(`Neighbour: ${listOfNeighbours[i][j]}`);
     }
-
 }
+
+const percentages3 = [];
+
+let i = 0;
+while (i < populationsArr.length) {
+    percentages3[i] = percentageOfWorld1(populationsArr[i]);
+    i++;
+}
+console.log(percentages);
+console.log(percentages2);
+console.log(percentages3);
