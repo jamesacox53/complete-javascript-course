@@ -113,3 +113,13 @@ let popOfTown = 50;
 for (let person = 1; person <= popOfTown; person++) {
     console.log(`person ${person} is currently voting`);
 }
+
+const populationsArr = [populationOfChina, populationOfFinland, populationOfBrazil, populationOfFrance];
+
+const percentages2 = [];
+
+for (let i = 0; i < populationsArr.length; i++) {
+    percentages2[i] = percentageOfWorld1(populationsArr[i]);
+}
+console.log(percentages);
+console.log(percentages2);
