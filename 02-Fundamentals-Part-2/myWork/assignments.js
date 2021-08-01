@@ -108,3 +108,8 @@ myCountry['population'] = myCountry['population'] - 2;
 console.log(myCountry.population);
 
 myCountry.describe();
+
+let popOfTown = 50;
+for (let person = 1; person <= popOfTown; person++) {
+    console.log(`person ${person} is currently voting`);
+}
