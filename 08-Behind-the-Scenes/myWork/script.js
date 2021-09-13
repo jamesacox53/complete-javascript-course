@@ -90,3 +90,25 @@
 // var x = 1;
 // var y = 14;
   
+// const qwop = () => {
+//     console.log(this);
+// } 
+
+
+// const jonas = {
+//     firstName: 'Jonas',
+//     year: 1991,
+//     qqq: this, 
+//     calcAge: function() {
+//         console.log(qqq);
+//         const isMillenial = function () {
+//             console.log(qqq.year);
+//         }; 
+//         isMillenial();
+//     },
+//     greet: function() { 
+//         console.log(this)
+//     }
+// };
+
+// jonas.calcAge();
