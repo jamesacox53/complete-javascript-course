@@ -31,3 +31,6 @@ const restaurant = {
 
 const menu = [...restaurant.starterMenu, ...restaurant.mainMenu];
 console.log(menu);
+
+console.log( '' || 0 || 1 || null);
+console.log(1 && 2 && null && 'b');
