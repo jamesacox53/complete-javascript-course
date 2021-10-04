@@ -34,3 +34,22 @@ console.log(menu);
 
 console.log( '' || 0 || 1 || null);
 console.log(1 && 2 && null && 'b');
+
+const ordersSet = new Set([
+  'Pasta',
+  'Pizza',
+  'Pizza',
+  'Risotto',
+  'Pasta',
+  'Pizza',
+]);
+console.log(ordersSet);
+
+ordersSet.add('Garlic Bread');
+ordersSet.add('Garlic Bread');
+console.log(ordersSet);
+
+// for (let i = 0; i < ordersSet.size; i++) {
+  
+//   console.log(ordersSet[i]);
+// }
