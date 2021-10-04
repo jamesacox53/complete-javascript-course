@@ -53,3 +53,9 @@ console.log(ordersSet);
   
 //   console.log(ordersSet[i]);
 // }
+
+const mapTest = new Map();
+
+mapTest.set(document.querySelector('h1'), 'This is a test.');
+
+console.log(mapTest.get(document.querySelector('h1')));
