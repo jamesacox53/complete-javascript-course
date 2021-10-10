@@ -75,7 +75,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 
-// 145. Creating DOM Elements
+// Creating DOM Elements
 
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
@@ -102,7 +102,7 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
-// 148. The map Method
+// The map Method
 
 const eurToUsd = 1.1;
 
@@ -111,7 +111,7 @@ const movementsUSD = movements.map(movement => movement * eurToUsd);
 console.log(movements);
 console.log(movementsUSD);
 
-// 149. Computing Usernames
+// Computing Usernames
 
 const createUsernames = function (accounts) {
 
@@ -132,7 +132,7 @@ const createUsername = function (user) {
 createUsernames(accounts);
 console.log(accounts);
 
-// 150. The filter Method
+// The filter Method
 
 const deposits = movements.filter(move => move > 0);
 
@@ -141,3 +141,25 @@ const withdrawals = movements.filter(move => move < 0);
 console.log(movements);
 console.log(deposits);
 console.log(withdrawals);
+
+// The reduce Method
+
+const balance = movements.reduce((accumulation, current) => accumulation + current, 0);
+
+console.log(balance);
+
+const calcDisplayBalance = function (movements) {
+
+  const balance = calcBalance(movements);
+
+  labelBalance.textContent = `${balance} €`;
+}
+
+const calcBalance = function (movements) {
+
+  const balance = movements.reduce((accumulation, movement) => accumulation + movement, 0);
+
+  return balance;
+}
+
+calcPrintBalance(account1.movements);
