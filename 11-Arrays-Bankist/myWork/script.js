@@ -131,3 +131,13 @@ const createUsername = function (user) {
 
 createUsernames(accounts);
 console.log(accounts);
+
+// 150. The filter Method
+
+const deposits = movements.filter(move => move > 0);
+
+const withdrawals = movements.filter(move => move < 0);
+
+console.log(movements);
+console.log(deposits);
+console.log(withdrawals);
