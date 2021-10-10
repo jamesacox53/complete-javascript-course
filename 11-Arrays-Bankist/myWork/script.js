@@ -110,3 +110,24 @@ const movementsUSD = movements.map(movement => movement * eurToUsd);
 
 console.log(movements);
 console.log(movementsUSD);
+
+// 149. Computing Usernames
+
+const createUsernames = function (accounts) {
+
+  accounts.forEach(function (account) {
+    account.username = createUsername(account.owner);
+  });
+}
+
+const createUsername = function (user) {
+  
+  const usersNames = user.split(' ');
+  const usersNamesFirstLettersLowerCase = usersNames.map(name => name[0].toLowerCase());
+  const username = usersNamesFirstLettersLowerCase.join('');
+  
+  return username;
+}
+
+createUsernames(accounts);
+console.log(accounts);
