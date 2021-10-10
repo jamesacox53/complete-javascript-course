@@ -101,3 +101,12 @@ const displayMovements = function (movements) {
 }
 
 displayMovements(account1.movements);
+
+// 148. The map Method
+
+const eurToUsd = 1.1;
+
+const movementsUSD = movements.map(movement => movement * eurToUsd);
+
+console.log(movements);
+console.log(movementsUSD);
