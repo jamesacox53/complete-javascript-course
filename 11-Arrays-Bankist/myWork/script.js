@@ -92,7 +92,7 @@ const displayMovements = function (movements) {
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${index + 1} ${type}</div>
-        <div class="movements__value">${movement}</div>
+        <div class="movements__value">${movement}€</div>
       </div>
     `;
 
@@ -162,4 +162,43 @@ const calcBalance = function (movements) {
   return balance;
 }
 
-calcPrintBalance(account1.movements);
+calcDisplayBalance(account1.movements);
+
+// The Magic of Chaining Methods
+
+const calcDisplaySummary = function (movements) {
+  
+  const income = calcSummaryIncome(movements);
+  labelSumIn.textContent = `${income}€`;
+
+  const outgoing = calcSummaryOutgoing(movements);
+  labelSumOut.textContent = `${outgoing}€`;
+
+  const interest = calcSummaryInterest(movements);
+  labelSumInterest.textContent = `${interest}€`;
+
+}
+
+const calcSummaryIncome = function (movements) {
+  const incomes = movements.filter(move => move > 0);
+  const income = incomes.reduce((accumulator, current) => accumulator + current, 0);
+
+  return income;
+}
+
+const calcSummaryOutgoing = function (movements) {
+  const outgoings = movements.filter(move => move < 0);
+  const outgoing = outgoings.reduce((accumulator, current) => accumulator + current, 0);
+
+  return Math.abs(outgoing);
+}
+
+const calcSummaryInterest = function (movements) {
+  const incomes = movements.filter(move => move > 0);
+  const interests = incomes.map(income => income * (1.2/100)).filter(interest => interest >= 1);
+  const interest = interests.reduce((accumulator, current) => accumulator + current, 0);
+
+  return interest;
+}
+
+calcDisplaySummary(account1.movements);
