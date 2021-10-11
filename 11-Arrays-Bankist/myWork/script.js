@@ -148,9 +148,18 @@ const balance = movements.reduce((accumulation, current) => accumulation + curre
 
 // console.log(balance);
 
-const calcDisplayBalance = function (movements) {
+const calcDisplayBalance = function (currentAccount) {
+
+  const movements = currentAccount.movements;
 
   const balance = calcBalance(movements);
+
+  updateBalance(currentAccount, balance);
+}
+
+const updateBalance = function(currentAccount, balance) {
+  
+  currentAccount.balance = balance;
 
   labelBalance.textContent = `${balance} €`;
 }
@@ -237,11 +246,17 @@ const displayBankingApplication = function (currentAccount) {
 
   displayUIAndWelcomeMessage(currentAccount);
   
+  updateUI(currentAccount);
+}
+
+const updateUI = function (currentAccount) {
+
   displayMovements(currentAccount.movements);
   
-  calcDisplayBalance(currentAccount.movements);
+  calcDisplayBalance(currentAccount);
   
   calcDisplaySummary(currentAccount);
+
 }
 
 const clearLoginFields = function () {
@@ -285,3 +300,78 @@ const invalidLogin = function () {
 }
 
 btnLogin.addEventListener('click', loginButtonClicked);
+
+// Implementing Transfers
+
+
+const transferMoneyButtonClicked = function (event) {
+  
+  //prevent form from submitting
+  event.preventDefault();
+
+  const recieverAccountUsername = inputTransferTo.value;
+  const recieverAccount = accounts.find(account => account.username === recieverAccountUsername);
+
+  const amount = Number(inputTransferAmount.value);
+
+  const transferredMoney = transferMoney(recieverAccount, amount);
+  
+  if (!transferredMoney) {
+    return;
+  }
+
+  clearTransferFields();
+
+  updateUI(currentAccount);
+}
+
+const transferMoney = function(recieverAccount, amount) {
+
+  const exists = checkAndActionIfAccountExists(recieverAccount);
+
+  if (!exists) {
+    return false;
+  }
+  
+  const isSameAccount = checkAndActionIfSameAccount(recieverAccount);
+  
+  if (isSameAccount) {
+    return false;
+  }
+
+  if (Number.isNaN(amount) || amount <= 0 || amount > currentAccount.balance) {
+    alert('This transfer amount is invalid.');
+    return false;
+  }
+
+  currentAccount.movements.push(-amount);
+  recieverAccount.movements.push(amount);
+
+  return true;
+}
+
+const checkAndActionIfSameAccount = function (recieverAccount) {
+    if (recieverAccount.username === currentAccount.username) {
+      alert('You cannot transfer money to your own account.');
+      return true;
+    }
+    return false;
+}
+
+const checkAndActionIfAccountExists = function (currentAccount) {
+  if (currentAccount === undefined || currentAccount === null) {
+    alert('This user does not exist, please enter a valid user name.')
+    return false;
+  }
+
+  return true;
+}
+
+const clearTransferFields = function () {
+  inputTransferTo.value = '';
+  inputTransferAmount.value = '';
+  inputTransferAmount.blur();
+}
+
+
+btnTransfer.addEventListener('click', transferMoneyButtonClicked);
