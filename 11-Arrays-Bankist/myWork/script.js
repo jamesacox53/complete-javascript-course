@@ -242,7 +242,7 @@ const loginButtonClicked = function (event) {
 
 const displayBankingApplication = function (currentAccount) {
   
-  clearLoginFields();
+  clearAllFields();
 
   displayUIAndWelcomeMessage(currentAccount);
   
@@ -327,6 +327,10 @@ const transferMoneyButtonClicked = function (event) {
 
 const transferMoney = function(recieverAccount, amount) {
 
+  if (currentAccount === undefined) {
+    return;
+  }
+  
   const exists = checkAndActionIfAccountExists(recieverAccount);
 
   if (!exists) {
@@ -373,5 +377,81 @@ const clearTransferFields = function () {
   inputTransferAmount.blur();
 }
 
-
 btnTransfer.addEventListener('click', transferMoneyButtonClicked);
+
+// The findIndex Method
+
+const closeAccountButtonClicked = function (event) {
+
+  //prevent form from submitting
+  event.preventDefault();
+
+  if (currentAccount === undefined) {
+    return;
+  }
+
+  const inputUsername = inputCloseUsername.value;
+  const inputPIN = inputClosePin.value;
+  
+  const currentAccountDeleted = deleteCurrentAccount(inputUsername, inputPIN);
+
+  if (!currentAccountDeleted) {
+    return;
+  }
+
+  clearAllFields();
+
+  containerApp.style.opacity = 0;
+
+  currentAccount = undefined;
+}
+
+const deleteCurrentAccount = function (inputUsername, inputPIN) {
+
+  const isCorrectDetails = checkAndActionIfCurrentAccount(inputUsername, inputPIN);
+  
+  if (!isCorrectDetails) {
+    return false;
+  }
+
+  const index = accounts.findIndex(account => account.username === currentAccount.username);
+
+  if (index === undefined || index === null || index === -1) {
+    alert('The current account has already been deleted.');
+    return false;
+  }
+
+  accounts.splice(index , 1);
+  return true;
+} 
+
+const checkAndActionIfCurrentAccount = function (inputUsername, inputPINString) {
+  
+  const pin = parseInt(inputPINString);
+
+  if (Number.isNaN(pin) || currentAccount.username !== inputUsername || currentAccount.pin !== pin) {
+    alert('This is not the correct Username/PIN.');
+    return false;
+  } 
+
+  return true;  
+}
+
+const clearCloseAccountFields = function () {
+  
+  inputCloseUsername.value = '';
+  inputClosePin.value = '';
+  inputClosePin.blur();
+}
+
+const clearAllFields = function () {
+
+  clearLoginFields();
+
+  clearTransferFields();
+
+  clearCloseAccountFields();
+
+}
+
+btnClose.addEventListener('click', closeAccountButtonClicked);
