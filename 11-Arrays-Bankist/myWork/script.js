@@ -100,7 +100,7 @@ const displayMovements = function (movements) {
   });
 }
 
-displayMovements(account1.movements);
+// displayMovements(account1.movements);
 
 // The map Method
 
@@ -108,8 +108,8 @@ const eurToUsd = 1.1;
 
 const movementsUSD = movements.map(movement => movement * eurToUsd);
 
-console.log(movements);
-console.log(movementsUSD);
+// console.log(movements);
+// console.log(movementsUSD);
 
 // Computing Usernames
 
@@ -130,7 +130,7 @@ const createUsername = function (user) {
 }
 
 createUsernames(accounts);
-console.log(accounts);
+// console.log(accounts);
 
 // The filter Method
 
@@ -138,15 +138,15 @@ const deposits = movements.filter(move => move > 0);
 
 const withdrawals = movements.filter(move => move < 0);
 
-console.log(movements);
-console.log(deposits);
-console.log(withdrawals);
+// console.log(movements);
+// console.log(deposits);
+// console.log(withdrawals);
 
 // The reduce Method
 
 const balance = movements.reduce((accumulation, current) => accumulation + current, 0);
 
-console.log(balance);
+// console.log(balance);
 
 const calcDisplayBalance = function (movements) {
 
@@ -162,19 +162,21 @@ const calcBalance = function (movements) {
   return balance;
 }
 
-calcDisplayBalance(account1.movements);
+// calcDisplayBalance(account1.movements);
 
 // The Magic of Chaining Methods
 
-const calcDisplaySummary = function (movements) {
+const calcDisplaySummary = function (currentAccount) {
   
+  const movements = currentAccount.movements;
+
   const income = calcSummaryIncome(movements);
   labelSumIn.textContent = `${income}€`;
 
   const outgoing = calcSummaryOutgoing(movements);
   labelSumOut.textContent = `${outgoing}€`;
 
-  const interest = calcSummaryInterest(movements);
+  const interest = calcSummaryInterest(currentAccount);
   labelSumInterest.textContent = `${interest}€`;
 
 }
@@ -193,12 +195,93 @@ const calcSummaryOutgoing = function (movements) {
   return Math.abs(outgoing);
 }
 
-const calcSummaryInterest = function (movements) {
+const calcSummaryInterest = function (currentAccount) {
+
+  const movements = currentAccount.movements;
+  const interestRate = currentAccount.interestRate;
+
   const incomes = movements.filter(move => move > 0);
-  const interests = incomes.map(income => income * (1.2/100)).filter(interest => interest >= 1);
+  const interests = incomes.map(income => income * ((interestRate * 1.0)/100)).filter(interest => interest >= 1);
   const interest = interests.reduce((accumulator, current) => accumulator + current, 0);
 
   return interest;
 }
 
-calcDisplaySummary(account1.movements);
+// calcDisplaySummary(account1.movements);
+
+// Implementing Login
+
+let currentAccount;
+
+const loginButtonClicked = function (event) {
+  //prevent form from submitting
+  event.preventDefault();
+
+  const tempAccount = accounts.find(acc => acc.username === inputLoginUsername.value);
+
+  const validLogin = checkAndActionIfAccountValid(tempAccount);
+
+  if (!validLogin) {
+    return;
+  }
+
+  // valid login
+  currentAccount = tempAccount;
+
+  displayBankingApplication (currentAccount);
+}
+
+const displayBankingApplication = function (currentAccount) {
+  
+  clearLoginFields();
+
+  displayUIAndWelcomeMessage(currentAccount);
+  
+  displayMovements(currentAccount.movements);
+  
+  calcDisplayBalance(currentAccount.movements);
+  
+  calcDisplaySummary(currentAccount);
+}
+
+const clearLoginFields = function () {
+  inputLoginUsername.value = '';
+  inputLoginPin.value = '';
+  inputLoginPin.blur();
+}
+
+const displayUIAndWelcomeMessage = function (currentAccount) {
+  const firstName = currentAccount.owner.split(' ')[0];
+  labelWelcome.textContent = `Welcome back, ${firstName}`;
+
+  containerApp.style.opacity = 100;
+}
+
+const checkAndActionIfAccountValid = function (currentAccount) {
+
+  if (currentAccount === undefined || currentAccount === null) {
+    invalidLogin();
+    return false;
+  }
+
+  const pin = parseInt(inputLoginPin.value, 10);
+
+  if (Number.isNaN(pin)) {
+    invalidLogin();
+    return false;
+
+  }
+
+  if (currentAccount.pin !== pin) {
+    invalidLogin();
+    return false;
+  }
+
+  return true;
+}
+
+const invalidLogin = function () {
+  alert('This Username/PIN is invalid.');
+}
+
+btnLogin.addEventListener('click', loginButtonClicked);
