@@ -498,3 +498,8 @@ const clearLoanFields = function() {
 
 
 btnLoan.addEventListener('click', requestLoanButtonClicked);
+
+// flat and flatMap
+
+const allMovements = accounts.flatMap(account => account.movements);
+const overallBalance = allMovements.reduce((accumulator, movement) => accumulator + movement, 0);
