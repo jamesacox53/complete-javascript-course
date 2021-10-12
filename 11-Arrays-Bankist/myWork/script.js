@@ -452,6 +452,49 @@ const clearAllFields = function () {
 
   clearCloseAccountFields();
 
+  clearLoanFields();
+
 }
 
 btnClose.addEventListener('click', closeAccountButtonClicked);
+
+// some and every
+
+const requestLoanButtonClicked = function (event) {
+
+  //prevent form from submitting
+  event.preventDefault();
+  
+  if (currentAccount === undefined) {
+    return;
+  }
+
+  const loanAmount = parseInt(inputLoanAmount.value);
+
+  if (Number.isNaN(loanAmount)|| loanAmount <= 0) {
+    alert('This is not a correct loan amount.');
+    return;
+  } 
+  
+  const acceptLoan = currentAccount.movements.some(movement => movement >= (loanAmount * 0.1));
+
+  if (!acceptLoan) {
+    alert('You did not meet the requirements to take out this loan.');
+    return;
+  }
+
+  currentAccount.movements.push(loanAmount);
+
+  updateUI(currentAccount);
+
+  clearLoanFields();
+}
+
+const clearLoanFields = function() {
+
+  inputLoanAmount.value = '';
+  inputLoanAmount.blur();
+}
+
+
+btnLoan.addEventListener('click', requestLoanButtonClicked);
