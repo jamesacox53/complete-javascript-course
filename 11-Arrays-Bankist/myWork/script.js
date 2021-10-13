@@ -77,10 +77,12 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // Creating DOM Elements
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort=false) {
   containerMovements.innerHTML = '';
 
-  movements.forEach(function (movement, index) {
+  const movementsOrdered = getMovementsInOrder(movements, sort);
+
+  movementsOrdered.forEach(function (movement, index) {
     let type;
     
     if (movement < 0) {
@@ -503,3 +505,29 @@ btnLoan.addEventListener('click', requestLoanButtonClicked);
 
 const allMovements = accounts.flatMap(account => account.movements);
 const overallBalance = allMovements.reduce((accumulator, movement) => accumulator + movement, 0);
+
+// Sorting Arrays
+
+const getMovementsInOrder = function(movements, sort) {
+  const ret = movements.slice();
+
+  if (sort) {
+    ret.sort((a, b) => a - b);
+  }
+
+  return ret;
+}
+
+let sorted = false;
+
+const sortButtonClicked = function (event) {
+
+  event.preventDefault();
+
+  displayMovements(currentAccount.movements, !sorted);
+
+  sorted = !sorted;
+
+}
+
+btnSort.addEventListener('click', sortButtonClicked);
