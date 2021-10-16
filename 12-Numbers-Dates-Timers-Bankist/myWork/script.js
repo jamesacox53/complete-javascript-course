@@ -16,10 +16,10 @@ const account1 = {
     '2019-12-23T07:42:02.383Z',
     '2020-01-28T09:15:04.904Z',
     '2020-04-01T10:17:24.185Z',
-    '2020-05-08T14:11:59.604Z',
-    '2020-05-27T17:01:17.194Z',
-    '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2021-10-12T14:11:59.604Z',
+    '2021-10-13T17:01:17.194Z',
+    '2021-10-14T10:36:17.929Z',
+    '2021-10-15T13:35:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -110,7 +110,7 @@ const displayMovements = function (currentAccount, sort=false) {
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${index + 1} ${type}</div>
-        <div class="movements__date">${formatDateAndTime(movementDate)}</div>
+        <div class="movements__date">${getMovementDateAndTimeString(movementDate)}</div>
         <div class="movements__value">${formatMoneyDisplay(movement)}</div>
       </div>
     `;
@@ -585,8 +585,39 @@ const formatDateAndTime = function (date) {
   const day = date.getDate().toString().padStart(2, '0');
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear().toString().padStart(4, '0');
+  const time = getDateTimeString(date);
+
+  return `${day}/${month}/${year}, ${time}`;
+}
+
+// Operations With Dates
+
+const getDateTimeString = function (date) {
+
   const hour = date.getHours().toString().padStart(2, '0');
   const minute = date.getMinutes().toString().padStart(2, '0');
+  
+  return `${hour}:${minute}`;
+}
 
-  return `${day}/${month}/${year}, ${hour}:${minute}`;
+
+const getMovementDateAndTimeString = function (movementDate) {
+
+  const now = new Date();
+
+  const numDaysPassed = Math.round(Math.abs(now - movementDate) / (1000 * 60 * 60 * 24));
+
+  if (numDaysPassed === 0) {
+    return `Today at ${getDateTimeString(movementDate)}`;
+  }
+
+  if (numDaysPassed === 1) {
+    return `Yesterday at ${getDateTimeString(movementDate)}`;
+  }
+
+  if (numDaysPassed <= 7) {
+    return `${numDaysPassed} days ago at ${getDateTimeString(movementDate)}`;
+  }
+
+  return formatDateAndTime(movementDate);
 }
