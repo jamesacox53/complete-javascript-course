@@ -568,7 +568,12 @@ return Math.floor(value);
 }
 
 const formatMoneyDisplay = function(amount) {
-  return `${amount.toFixed(2)}€`;
+  
+  const amountFormat = new Intl.NumberFormat(currentAccount.locale, {
+    style: 'currency',
+    currency: currentAccount.currency,
+  }).format(amount);
+  return amountFormat;
 }
 
 // Adding Dates to "Bankist" App
@@ -582,22 +587,31 @@ const setCurrentDateField = function() {
 
 const formatDateAndTime = function (date) {
 
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear().toString().padStart(4, '0');
-  const time = getDateTimeString(date);
+  const dateOptions = {
+    hour:'2-digit',
+    minute:'2-digit',
+    day:'2-digit',
+    month:'2-digit',
+    year:'numeric'
+  };
+  
+  const dateString = (new Intl.DateTimeFormat(currentAccount.locale, dateOptions)).format(date);
 
-  return `${day}/${month}/${year}, ${time}`;
+  return dateString;
 }
 
 // Operations With Dates
 
-const getDateTimeString = function (date) {
+const getTimeStringFromDate = function (date) {
 
-  const hour = date.getHours().toString().padStart(2, '0');
-  const minute = date.getMinutes().toString().padStart(2, '0');
+  const timeOptions = {
+    hour:'2-digit',
+    minute:'2-digit'
+  };
   
-  return `${hour}:${minute}`;
+  const timeString = (new Intl.DateTimeFormat(currentAccount.locale, timeOptions)).format(date);
+
+  return timeString;
 }
 
 
@@ -608,16 +622,24 @@ const getMovementDateAndTimeString = function (movementDate) {
   const numDaysPassed = Math.round(Math.abs(now - movementDate) / (1000 * 60 * 60 * 24));
 
   if (numDaysPassed === 0) {
-    return `Today at ${getDateTimeString(movementDate)}`;
+    return `Today at ${getTimeStringFromDate(movementDate)}`;
   }
 
   if (numDaysPassed === 1) {
-    return `Yesterday at ${getDateTimeString(movementDate)}`;
+    return `Yesterday at ${getTimeStringFromDate(movementDate)}`;
   }
 
   if (numDaysPassed <= 7) {
-    return `${numDaysPassed} days ago at ${getDateTimeString(movementDate)}`;
+    return `${numDaysPassed} days ago at ${getTimeStringFromDate(movementDate)}`;
   }
 
   return formatDateAndTime(movementDate);
 }
+
+// Internationalizing Dates (Intl)
+
+const locale = navigator.language;
+
+// Internationalizing Numbers (Intl)
+
+const currency = 'EUR';
