@@ -89,14 +89,18 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // Creating DOM Elements
 
-const displayMovements = function (movements, sort=false) {
+const displayMovements = function (currentAccount, sort=false) {
   containerMovements.innerHTML = '';
 
+  const movements = currentAccount.movements;
+  
   const movementsOrdered = getMovementsInOrder(movements, sort);
 
   movementsOrdered.forEach(function (movement, index) {
     let type;
     
+    const movementDate = new Date(currentAccount.movementsDates[movements.indexOf(movement)]);
+
     if (movement < 0) {
       type = `withdrawal`;
     } else {  
@@ -106,6 +110,7 @@ const displayMovements = function (movements, sort=false) {
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${index + 1} ${type}</div>
+        <div class="movements__date">${formatDateAndTime(movementDate)}</div>
         <div class="movements__value">${formatMoneyDisplay(movement)}</div>
       </div>
     `;
@@ -265,7 +270,9 @@ const displayBankingApplication = function (currentAccount) {
 
 const updateUI = function (currentAccount) {
 
-  displayMovements(currentAccount.movements);
+  setCurrentDateField();
+  
+  displayMovements(currentAccount);
   
   calcDisplayBalance(currentAccount);
   
@@ -362,8 +369,13 @@ const transferMoney = function(recieverAccount, amount) {
     return false;
   }
 
+  const currentDateString = (new Date()).toISOString();
+
   currentAccount.movements.push(-amount);
+  currentAccount.movementsDates.push(currentDateString);
+  
   recieverAccount.movements.push(amount);
+  recieverAccount.movementsDates.push(currentDateString);
 
   return true;
 }
@@ -498,7 +510,10 @@ const requestLoanButtonClicked = function (event) {
     return;
   }
 
+  const currentDateString = (new Date()).toISOString();
+
   currentAccount.movements.push(loanAmount);
+  currentAccount.movementsDates.push(currentDateString);
 
   updateUI(currentAccount);
 
@@ -537,7 +552,7 @@ const sortButtonClicked = function (event) {
 
   event.preventDefault();
 
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
 
   sorted = !sorted;
 
@@ -554,4 +569,24 @@ return Math.floor(value);
 
 const formatMoneyDisplay = function(amount) {
   return `${amount.toFixed(2)}€`;
+}
+
+// Adding Dates to "Bankist" App
+
+const setCurrentDateField = function() {
+  const now = new Date();
+  const currDateAndTime = formatDateAndTime(now);
+  
+  labelDate.textContent = currDateAndTime;
+}
+
+const formatDateAndTime = function (date) {
+
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear().toString().padStart(4, '0');
+  const hour = date.getHours().toString().padStart(2, '0');
+  const minute = date.getMinutes().toString().padStart(2, '0');
+
+  return `${day}/${month}/${year}, ${hour}:${minute}`;
 }
