@@ -278,6 +278,7 @@ const updateUI = function (currentAccount) {
   
   calcDisplaySummary(currentAccount);
 
+  startLogoutTimer();
 }
 
 const clearLoginFields = function () {
@@ -425,11 +426,7 @@ const closeAccountButtonClicked = function (event) {
     return;
   }
 
-  clearAllFields();
-
-  containerApp.style.opacity = 0;
-
-  currentAccount = undefined;
+  logOutCurrentUser();
 }
 
 const deleteCurrentAccount = function (inputUsername, inputPIN) {
@@ -512,6 +509,7 @@ const requestLoanButtonClicked = function (event) {
 
   const currentDateString = (new Date()).toISOString();
 
+  pauseLogOutTimer();
   setTimeout(performLoan, 5000, loanAmount, currentDateString);
 }
 
@@ -649,4 +647,82 @@ const performLoan = function (loanAmount, currentDateString) {
   updateUI(currentAccount);
 
   clearLoanFields();
+  unPauseLogOutTimer();
+}
+
+// Implementing a Countdown Timer
+
+let logOutTimer;
+let logOutTimerPaused;
+
+const startLogoutTimer = function () {
+
+  let time = 600;
+
+  stopLogOutTimer();
+
+  logOutTimerPaused = false;
+
+  const tick = function () {
+    
+    if (logOutTimerPaused) {
+      return;
+    }
+
+    const timeString = getTimeStringMinutesSecondsFromDate(new Date(time * 1000));
+    labelTimer.textContent = timeString;
+
+    if (time <= 0) {
+      logOutCurrentUser();
+      return;
+    }
+
+    time--;
+
+  }
+
+  tick();
+
+  logOutTimer = setInterval(tick, 1000);
+}
+
+const logOutCurrentUser = function () {
+  
+  stopLogOutTimer();
+
+  clearAllFields();
+
+  containerApp.style.opacity = 0;
+
+  currentAccount = undefined;
+
+  labelWelcome.textContent = `Log in to get started`;
+}
+
+const stopLogOutTimer = function () {
+  if (logOutTimer !== undefined) {
+    clearTimeout(logOutTimer);
+  }
+
+  logOutTimer = undefined;
+}
+
+const getTimeStringMinutesSecondsFromDate = function (date) {
+
+  const timeOptions = {
+    second:'2-digit',
+    minute:'2-digit'
+  };
+  
+  const timeString = (new Intl.DateTimeFormat(currentAccount.locale, timeOptions)).format(date);
+
+  return timeString;
+}
+
+const pauseLogOutTimer = function() {
+  logOutTimerPaused = true;
+}
+
+const unPauseLogOutTimer = function() {
+  logOutTimerPaused = false;
 }
