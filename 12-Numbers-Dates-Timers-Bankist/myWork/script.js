@@ -512,12 +512,7 @@ const requestLoanButtonClicked = function (event) {
 
   const currentDateString = (new Date()).toISOString();
 
-  currentAccount.movements.push(loanAmount);
-  currentAccount.movementsDates.push(currentDateString);
-
-  updateUI(currentAccount);
-
-  clearLoanFields();
+  setTimeout(performLoan, 5000, loanAmount, currentDateString);
 }
 
 const clearLoanFields = function() {
@@ -643,3 +638,15 @@ const locale = navigator.language;
 // Internationalizing Numbers (Intl)
 
 const currency = 'EUR';
+
+// Timers: setTimeout and setInterval
+
+const performLoan = function (loanAmount, currentDateString) {
+  
+  currentAccount.movements.push(loanAmount);
+  currentAccount.movementsDates.push(currentDateString);
+
+  updateUI(currentAccount);
+
+  clearLoanFields();
+}
