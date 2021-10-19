@@ -50,3 +50,18 @@ const scrollToSection1 = function (event) {
 }
 
 btnScrollTo.addEventListener('click', scrollToSection1);
+
+// Event Delegation: Implementing Page Navigation
+
+const clickNavLinks = function(event) {
+  event.preventDefault();
+  
+  if (event.target.classList.contains('nav__link')) {
+    
+    const id = event.target.getAttribute('href');
+    
+    document.querySelector(id).scrollIntoView({behavior: 'smooth'});
+  }
+}
+
+document.querySelector('.nav__links').addEventListener('click', clickNavLinks);
