@@ -65,3 +65,32 @@ const clickNavLinks = function(event) {
 }
 
 document.querySelector('.nav__links').addEventListener('click', clickNavLinks);
+
+// Building a Tabbed Component
+
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
+const tabClicked = function(event) {
+
+  const clicked = event.target.closest('.operations__tab');
+
+  if(!clicked) return;
+
+  makeAllTabsInactive();
+
+  clicked.classList.add('operations__tab--active');
+
+  document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active');
+
+}
+
+const makeAllTabsInactive = function () {
+
+  tabs.forEach(tab => tab.classList.remove('operations__tab--active'));
+  tabsContent.forEach(content => content.classList.remove('operations__content--active'));
+
+}
+
+tabsContainer.addEventListener('click', tabClicked);
