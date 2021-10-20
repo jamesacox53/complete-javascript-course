@@ -94,3 +94,43 @@ const makeAllTabsInactive = function () {
 }
 
 tabsContainer.addEventListener('click', tabClicked);
+
+// Passing Arguments to Event Handlers
+
+const nav = document.querySelector('.nav');
+
+const mouseOverNavBar = (event) => mouseEventNavBar(event, dimAllOtherNavBarElements);
+
+const dimAllOtherNavBarElements = (link) => changeOpacityNavBarElements(0.5, link);
+
+const mouseOutNavBar = (event) => mouseEventNavBar(event, unDimAllOtherNavBarElements);
+
+const unDimAllOtherNavBarElements = (link) => changeOpacityNavBarElements(1, link);
+
+const mouseEventNavBar = function (event, mouseEventFunction) {
+  const link = event.target.closest('.nav__link');
+
+  if(!link) return;
+  
+  mouseEventFunction(link);
+}
+
+const changeOpacityNavBarElements = function (opacity, link) {
+  
+  const links = nav.querySelectorAll('.nav__link');
+
+  const logo = nav.querySelector('img');
+
+  links.forEach(element => {
+
+    if (element !== link) {
+      element.style.opacity = opacity;
+    }
+  });
+
+  logo.style.opacity = opacity;
+}
+
+nav.addEventListener('mouseover', mouseOverNavBar);
+
+nav.addEventListener('mouseout', mouseOutNavBar);
