@@ -95,6 +95,7 @@ const makeAllTabsInactive = function () {
 
 tabsContainer.addEventListener('click', tabClicked);
 
+
 // Passing Arguments to Event Handlers
 
 const nav = document.querySelector('.nav');
@@ -134,3 +135,27 @@ const changeOpacityNavBarElements = function (opacity, link) {
 nav.addEventListener('mouseover', mouseOverNavBar);
 
 nav.addEventListener('mouseout', mouseOutNavBar);
+
+// A Better Way: The Intersection Observer API
+
+const header = document.querySelector('.header');
+
+const stickyNav = function (entries) {
+
+  for (const entry of entries) {
+    
+    if (!entry.isIntersecting) {
+      nav.classList.add('sticky');
+    } else {
+      nav.classList.remove('sticky');
+    }
+  }
+}
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${nav.getBoundingClientRect().height}px`
+});
+
+headerObserver.observe(header);
