@@ -143,7 +143,7 @@ const header = document.querySelector('.header');
 const stickyNav = function (entries) {
 
   for (const entry of entries) {
-    
+
     if (!entry.isIntersecting) {
       nav.classList.add('sticky');
     } else {
@@ -159,3 +159,41 @@ const headerObserver = new IntersectionObserver(stickyNav, {
 });
 
 headerObserver.observe(header);
+
+// Revealing Elements on Scroll
+
+const allSections = document.querySelectorAll('.section');
+
+const hideAllSections = function () {
+  
+  for (const section of allSections) {
+    section.classList.add('section--hidden');
+  }
+}
+
+const revealSection = function(entries, observer) {
+  const entry = entries[0];
+
+  if (!entry.isIntersecting) return;
+  
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+}
+
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.15
+});
+
+const revealElementsOnScroll = function () {
+  
+  hideAllSections();
+
+  allSections.forEach(function(section) {
+    sectionObserver.observe(section);
+  });
+
+
+}
+
+revealElementsOnScroll();
