@@ -235,6 +235,20 @@ const buttonRight = document.querySelector('.slider__btn--right');
 const goToSlide = function (sliderPosition) {
   
   slides.forEach((slide, index) => slide.style.transform = `translateX(${100 * (index - sliderPosition)}%)`);
+
+  const dots = document.querySelectorAll('.dots__dot');
+
+  dots.forEach((dot) => {
+    
+    if(dot.dataset.slide == sliderPosition) {
+      
+      dot.classList.add('dots__dot--active');
+    
+    } else {
+
+      dot.classList.remove('dots__dot--active');
+    }
+  });
 }
 
 const putSlidesSideBySide = () => goToSlide(0);
@@ -262,11 +276,67 @@ const moveLeftSlide = function () {
 
 const slider = function () {
 
+  createDots();
   putSlidesSideBySide();
 
   buttonRight.addEventListener('click', moveRightSlide);
   buttonLeft.addEventListener('click', moveLeftSlide);
+
+  dotContainer.addEventListener('click', sliderButtonClicked);
+
+  observeSlider();
+}
+
+// Building a Slider Component: Part 2
+
+const sliderElement = document.querySelector('.slider');
+
+const arrowKeyPressed = function (event) {
+
+  if (event.key === 'ArrowLeft') moveLeftSlide();
+  if (event.key === 'ArrowRight') moveRightSlide();
+}
+
+const arrowKeyEventListener = function (entries) {
+  const entry = entries[0];
+
+  if (entry.isIntersecting) {
+
+    document.addEventListener('keydown', arrowKeyPressed);
+
+  } else {
+
+    document.removeEventListener('keydown', arrowKeyPressed);
+  }
+}
+
+const sliderObserver = new IntersectionObserver(arrowKeyEventListener, {
+  root: null,
+  threshold: 0
+});
+
+const observeSlider = () => sliderObserver.observe(sliderElement);
+
+const dotContainer = document.querySelector('.dots');
+
+const createDots = function () {
+  
+  for(let i = 0; i < slides.length; i++) {
+
+    const buttonHtml = 
+    `<button class="dots__dot" data-slide="${i}"></button>`;
+
+    dotContainer.insertAdjacentHTML('beforeend', buttonHtml);
+  }
+}
+
+const sliderButtonClicked = function (event) {
+  
+  if (!event.target.classList.contains("dots__dot")) return;
+
+  const slide = event.target.dataset.slide;
+
+  goToSlide(slide);
 }
 
 slider();
-
