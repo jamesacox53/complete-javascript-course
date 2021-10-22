@@ -223,3 +223,50 @@ const lazyLoadImages = function () {
 }
 
 lazyLoadImages();
+
+// Building a Slider Component: Part 1
+
+const slides = document.querySelectorAll('.slide');
+let sliderPosition = 0;
+
+const buttonLeft = document.querySelector('.slider__btn--left');
+const buttonRight = document.querySelector('.slider__btn--right');
+
+const goToSlide = function (sliderPosition) {
+  
+  slides.forEach((slide, index) => slide.style.transform = `translateX(${100 * (index - sliderPosition)}%)`);
+}
+
+const putSlidesSideBySide = () => goToSlide(0);
+
+const moveRightSlide = function () {
+  
+  sliderPosition = (sliderPosition + 1) % slides.length;
+
+  goToSlide(sliderPosition);
+}
+
+const moveLeftSlide = function () {
+  
+  if (sliderPosition <= 0) {
+
+    sliderPosition = slides.length - 1;
+  
+  } else {
+  
+    sliderPosition--;
+  }
+  
+  goToSlide(sliderPosition);
+}
+
+const slider = function () {
+
+  putSlidesSideBySide();
+
+  buttonRight.addEventListener('click', moveRightSlide);
+  buttonLeft.addEventListener('click', moveLeftSlide);
+}
+
+slider();
+
