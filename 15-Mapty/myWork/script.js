@@ -13,39 +13,67 @@ const inputElevation = document.querySelector('.form__input--elevation');
 
 // Using the Geolocation API
 
+const launchMapty = function () {
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(successGettingUserPosition, failureGettingUserPosition);
+    }
+}
+
 const successGettingUserPosition = function (position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     
     const locationCoords = [latitude, longitude];
 
-    getLocationOnMap(locationCoords);
+    initializeMap(locationCoords);
 }
 
 const failureGettingUserPosition = function () {
-    getLocationOnMap();
+    initializeMap();
 }
 
 // Displaying a Map Using Leaflet Library
 
-const getLocationOnMap = function (locationCoords=[51.505, -0.09]) {
+let map;
 
-    var map = L.map('map').setView(locationCoords, 13);
+const initializeMap = function (initialLocationCoords=[51.505, -0.09]) {
+
+    map = L.map('map').setView(initialLocationCoords, 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+    
+    createMarker(initialLocationCoords);
 
-L.marker(locationCoords).addTo(map)
-    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-    .openPopup();
+    map.on('click', clickOnMap);
 }
 
-const launchMapty = function () {
+// Displaying a Map Marker
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(successGettingUserPosition, failureGettingUserPosition);
-    }
+const createMarker = function (locationCoords) {
+    
+    const popUpOptions = {
+        maxWidth: 250,
+        minWidth: 100,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'running-popup'
+    };
+
+    L.marker(locationCoords).addTo(map)
+    .bindPopup(L.popup(popUpOptions)).setPopupContent('Workout').openPopup();
+}
+
+const clickOnMap = function (mapEvent) {
+    
+    const latitude = mapEvent.latlng.lat;
+    const longitude = mapEvent.latlng.lng;
+    
+    const locationCoords = [latitude, longitude];
+
+    createMarker(locationCoords);
 }
 
 launchMapty();
