@@ -16,11 +16,29 @@ const inputElevation = document.querySelector('.form__input--elevation');
 const successGettingUserPosition = function (position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
-    const googleMapsLocation = `https://www.google.com/maps/@${latitude},${longitude},14z`;
+    
+    const locationCoords = [latitude, longitude];
+
+    getLocationOnMap(locationCoords);
 }
 
-const failureGettingUserPosition = function (position) {
-    alert('Could not get your position.')
+const failureGettingUserPosition = function () {
+    getLocationOnMap();
+}
+
+// Displaying a Map Using Leaflet Library
+
+const getLocationOnMap = function (locationCoords=[51.505, -0.09]) {
+
+    var map = L.map('map').setView(locationCoords, 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+L.marker(locationCoords).addTo(map)
+    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+    .openPopup();
 }
 
 const launchMapty = function () {
