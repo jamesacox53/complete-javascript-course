@@ -18,6 +18,8 @@ const launchMapty = function () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(successGettingUserPosition, failureGettingUserPosition);
     }
+
+    
 }
 
 const successGettingUserPosition = function (position) {
@@ -45,35 +47,72 @@ const initializeMap = function (initialLocationCoords=[51.505, -0.09]) {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     
-    createMarker(initialLocationCoords);
-
     map.on('click', clickOnMap);
 }
 
 // Displaying a Map Marker
 
-const createMarker = function (locationCoords) {
+const createMarker = function (locationCoords, content, popUpOptions) {
+    
+    L.marker(locationCoords).addTo(map)
+    .bindPopup(L.popup(popUpOptions)).setPopupContent(content).openPopup();
+}
+
+const clickOnMap = function (mapEvent) {
+    
+    form.classList.remove('hidden');
+    inputDistance.focus();
+
+    inputType.addEventListener('change', exerciseTypeChanges);
+    
+    form.addEventListener('submit', (event) => submitWorkout(event, mapEvent));
+}
+
+// Rendering Workout Input Form
+
+const submitWorkout = function (event, mapEvent) {
+    event.preventDefault();
+    console.log(mapEvent);
+
+    const latitude = mapEvent.latlng.lat;
+    const longitude = mapEvent.latlng.lng;
+    
+    const locationCoords = [latitude, longitude];
+
+    createRunningMarker(locationCoords);
+
+    clearWorkoutFormFields();
+}
+
+const clearWorkoutFormFields = function () {
+
+    inputDistance.value = '';
+    inputDuration.value = '';
+    inputCadence.value = '';
+    inputElevation.value = '';
+}
+
+const exerciseTypeChanges = function (event) {
+    
+    inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
+    inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
+}
+
+const createRunningMarker = (locationCoords) => createStandardMarker (locationCoords, 'Running', 'running-popup');
+
+const createCyclingMarker = (locationCoords) => createStandardMarker (locationCoords, 'Cycling', 'cycling-popup');
+
+const createStandardMarker = function (locationCoords, content, className) {
     
     const popUpOptions = {
         maxWidth: 250,
         minWidth: 100,
         autoClose: false,
         closeOnClick: false,
-        className: 'running-popup'
+        className: className
     };
 
-    L.marker(locationCoords).addTo(map)
-    .bindPopup(L.popup(popUpOptions)).setPopupContent('Workout').openPopup();
-}
-
-const clickOnMap = function (mapEvent) {
-    
-    const latitude = mapEvent.latlng.lat;
-    const longitude = mapEvent.latlng.lng;
-    
-    const locationCoords = [latitude, longitude];
-
-    createMarker(locationCoords);
+    createMarker(locationCoords, content, popUpOptions);
 }
 
 launchMapty();
