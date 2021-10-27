@@ -17,6 +17,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class App {
 
     map;
+    mapEvent;
 
     constructor() {
         this._launchMapty();
@@ -65,7 +66,9 @@ class App {
             .bindPopup(L.popup(popUpOptions)).setPopupContent(content).openPopup();
     }
 
-    _clickOnMap(mapEvent) {
+    _clickOnMap(mapE) {
+
+        this.mapEvent = mapE;
 
         form.classList.remove('hidden');
         inputDistance.focus();
@@ -73,17 +76,17 @@ class App {
         inputType.addEventListener('change', this._exerciseTypeChanges.bind(this));
 
         form.addEventListener('submit', (function (eventElem) {
-            this._submitWorkout(eventElem, mapEvent);
+            this._submitWorkout(eventElem);
         }).bind(this));
     }
 
     // Rendering Workout Input Form
 
-    _submitWorkout(eventElem, mapEvent) {
+    _submitWorkout(eventElem) {
         eventElem.preventDefault();
 
-        const latitude = mapEvent.latlng.lat;
-        const longitude = mapEvent.latlng.lng;
+        const latitude = this.mapEvent.latlng.lat;
+        const longitude = this.mapEvent.latlng.lng;
 
         const locationCoords = [latitude, longitude];
 
@@ -125,6 +128,64 @@ class App {
         };
 
         this._createMarker(locationCoords, content, popUpOptions);
+    }
+}
+
+// Managing Workout Data: Creating Classes
+
+class Workout {
+
+    id;
+    date;
+    locationCoords;
+    distance;
+    duration;
+
+    constructor(locationCoords, distance, duration) {
+
+        this.date = Date.now();
+        this.id = this.date.toString().slice(-10);
+        this.locationCoords = locationCoords;
+        this.distance = distance; // in km
+        this.duration = duration; // in min
+    }
+
+}
+
+class Running extends Workout {
+
+    cadence;
+    pace;
+
+    constructor(locationCoords, distance, duration, cadence) {
+
+        super(locationCoords, distance, duration);
+        this.cadence = cadence;
+
+        this._calculatePace();
+    }
+
+    _calculatePace() {
+        this.pace = this.duration / this.distance;
+    }
+}
+
+
+class Cycling extends Workout {
+
+    elevationGain;
+    speed;
+
+    constructor(locationCoords, distance, duration, elevationGain) {
+
+        super(locationCoords, distance, duration);
+        this.elevationGain = elevationGain;
+
+        this._calculateSpeed();
+    }
+
+    _calculateSpeed() {
+        this.speed = this.distance / (this.duration / 60);
     }
 }
 
