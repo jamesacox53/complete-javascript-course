@@ -16,6 +16,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 
 class App {
 
+    workouts = [];
     map;
     mapEvent;
 
@@ -29,6 +30,8 @@ class App {
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(this._successGettingUserPosition.bind(this), this._failureGettingUserPosition.bind(this));
+
+            form.addEventListener('submit', (eventElem) => eventElem.preventDefault());
         }
     }
 
@@ -68,16 +71,30 @@ class App {
 
     _clickOnMap(mapE) {
 
-        this.mapEvent = mapE;
+        let returning = false;
 
+        if (this._alreadyClickedMapWithoutSubmitting()) returning = true;
+
+        this.mapEvent = mapE;
         form.classList.remove('hidden');
         inputDistance.focus();
 
-        inputType.addEventListener('change', this._exerciseTypeChanges.bind(this));
+        if (returning) return;
 
-        form.addEventListener('submit', (function (eventElem) {
-            this._submitWorkout(eventElem);
-        }).bind(this));
+        const exerciseTypeChanges = this._exerciseTypeChanges.bind(this);
+
+        inputType.addEventListener('change', exerciseTypeChanges);
+
+        const submitWorkout = function (eventElem) {
+
+            if (this._submitWorkout(eventElem)) {
+                form.removeEventListener('submit', submitWorkout);
+                inputType.removeEventListener('change', exerciseTypeChanges);
+                this.mapEvent = undefined;
+            }
+        }.bind(this);
+
+        form.addEventListener('submit', submitWorkout);
     }
 
     // Rendering Workout Input Form
@@ -85,14 +102,23 @@ class App {
     _submitWorkout(eventElem) {
         eventElem.preventDefault();
 
-        const latitude = this.mapEvent.latlng.lat;
-        const longitude = this.mapEvent.latlng.lng;
+        // Get Data from form
+        const workoutData = this._getDataFromWorkoutForm();
 
-        const locationCoords = [latitude, longitude];
+        // Check if data is valid
+        if (!workoutData) return false;
 
-        this._createRunningMarker(locationCoords);
+        const locationCoords = this._getLocationCoordsFromMapEvent(this.mapEvent);
+
+        const workout = this._createWorkout(locationCoords, workoutData);
+
+        this.workouts.push(workout);
+
+        this._createWorkoutMarker(workout);
 
         this._clearWorkoutFormFields();
+
+        return true;
     }
 
     _clearWorkoutFormFields() {
@@ -129,20 +155,113 @@ class App {
 
         this._createMarker(locationCoords, content, popUpOptions);
     }
+
+    // Creating a New Workout
+
+    _getDataFromWorkoutForm() {
+
+        const workout = {};
+        workout.type = inputType.value;
+
+        workout.distance = +inputDistance.value;
+
+        if (!this._checkDataElementIsCorrect('Distance', workout.distance)) return null;
+
+        workout.duration = +inputDuration.value;
+
+        if (!this._checkDataElementIsCorrect('Duration', workout.duration)) return null;
+
+        if (workout.type === 'running') {
+            workout.cadence = +inputCadence.value;
+            if (!this._checkDataElementIsCorrect('Cadence', workout.cadence)) return null;
+        }
+
+        if (workout.type === 'cycling') {
+            workout.elevationGain = +inputElevation.value;
+            if (!this._checkElevationGainElementIsCorrect(workout.elevationGain)) return null;
+        }
+
+        return workout;
+    }
+
+    _checkDataElementIsCorrect(fieldName, element) {
+
+        if (!Number.isFinite(element)) {
+            alert(`${fieldName} has to be a number.`);
+            return false;
+        }
+
+        if (element <= 0) {
+            alert(`${fieldName} has to be a positive number.`);
+            return false;
+        }
+
+        return true;
+    }
+
+    _checkElevationGainElementIsCorrect(elevationGain) {
+
+        if (!Number.isFinite(elevationGain)) {
+            alert(`Elevation Gain has to be a number.`);
+            return false;
+        }
+
+        return true;
+    }
+
+    _alreadyClickedMapWithoutSubmitting() {
+
+        return this.mapEvent;
+    }
+
+    _createWorkout(locationCoords, workoutInput) {
+
+        let workoutRet;
+        if (workoutInput.type === 'running') {
+            workoutRet = new Running(locationCoords, workoutInput.distance, workoutInput.duration, workoutInput.cadence);
+        }
+
+        if (workoutInput.type === 'cycling') {
+            workoutRet = new Cycling(locationCoords, workoutInput.distance, workoutInput.duration, workoutInput.elevationGain);
+        }
+
+        return workoutRet;
+    }
+
+    _getLocationCoordsFromMapEvent(mapEvent) {
+
+        const latitude = mapEvent.latlng.lat;
+        const longitude = mapEvent.latlng.lng;
+
+        return [latitude, longitude];
+    }
+
+    _createWorkoutMarker(workout) {
+
+        if (workout.type === 'running') {
+            this._createRunningMarker(workout.locationCoords);
+        }
+
+        if (workout.type === 'cycling') {
+            this._createCyclingMarker(workout.locationCoords);
+        }
+    }
 }
 
 // Managing Workout Data: Creating Classes
 
 class Workout {
 
+    type;
     id;
     date;
     locationCoords;
     distance;
     duration;
 
-    constructor(locationCoords, distance, duration) {
+    constructor(locationCoords, distance, duration, type) {
 
+        this.type = type;
         this.date = Date.now();
         this.id = this.date.toString().slice(-10);
         this.locationCoords = locationCoords;
@@ -159,7 +278,7 @@ class Running extends Workout {
 
     constructor(locationCoords, distance, duration, cadence) {
 
-        super(locationCoords, distance, duration);
+        super(locationCoords, distance, duration, 'running');
         this.cadence = cadence;
 
         this._calculatePace();
@@ -178,7 +297,7 @@ class Cycling extends Workout {
 
     constructor(locationCoords, distance, duration, elevationGain) {
 
-        super(locationCoords, distance, duration);
+        super(locationCoords, distance, duration, 'cycling');
         this.elevationGain = elevationGain;
 
         this._calculateSpeed();
