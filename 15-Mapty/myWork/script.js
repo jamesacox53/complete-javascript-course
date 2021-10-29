@@ -17,6 +17,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class App {
 
     workouts = [];
+    mapZoomLevel = 13;
     map;
     mapEvent;
 
@@ -32,6 +33,8 @@ class App {
             navigator.geolocation.getCurrentPosition(this._successGettingUserPosition.bind(this), this._failureGettingUserPosition.bind(this));
 
             form.addEventListener('submit', (eventElem) => eventElem.preventDefault());
+
+            containerWorkouts.addEventListener('click', this._moveToMarker.bind(this));
         }
     }
 
@@ -52,7 +55,7 @@ class App {
 
     _initializeMap(initialLocationCoords = [51.505, -0.09]) {
 
-        this.map = L.map('map').setView(initialLocationCoords, 13);
+        this.map = L.map('map').setView(initialLocationCoords, this.mapZoomLevel);
 
         L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -306,7 +309,7 @@ class App {
 
     _getCommonWorkoutHTML(workout, emoji) {
 
-        return `<li class="workout workout--${workout.type}" data - id="${workout.id}" >
+        return `<li class="workout workout--${workout.type}" data-id="${workout.id}" >
         <h2 class="workout__title">${workout.description}</h2>
         <div class="workout__details">
             <span class="workout__icon">${emoji}</span>
@@ -333,6 +336,25 @@ class App {
         form.classList.add('hidden');
         setTimeout(() => form.style.display = 'grid', 1000);
 
+    }
+
+    // Move to Marker on Click
+
+    _moveToMarker(event) {
+        const workoutElement = event.target.closest('.workout');
+
+        if (!workoutElement) return;
+
+        const selectedWorkout = this.workouts.find(workout => workout.id === workoutElement.dataset.id);
+
+        const mapOptions = {
+            animate: true,
+            pan: {
+                duration: 1
+            }
+        }
+
+        this.map.setView(selectedWorkout.locationCoords, this.mapZoomLevel, mapOptions);
     }
 }
 
@@ -367,7 +389,6 @@ class Workout {
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         return `${type[0].toUpperCase() + type.slice(1)} on ${months[date.getMonth()]} ${date.getDate()} `;
     }
-
 }
 
 class Running extends Workout {
