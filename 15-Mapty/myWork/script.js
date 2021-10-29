@@ -30,6 +30,9 @@ class App {
     _launchMapty() {
 
         if (navigator.geolocation) {
+
+            this._setWorkoutsToLocalStorage();
+
             navigator.geolocation.getCurrentPosition(this._successGettingUserPosition.bind(this), this._failureGettingUserPosition.bind(this));
 
             form.addEventListener('submit', (eventElem) => eventElem.preventDefault());
@@ -48,7 +51,17 @@ class App {
     }
 
     _failureGettingUserPosition() {
-        this._initializeMap();
+
+        if (this.workouts.length > 0) {
+
+            const locationCoords = this.workouts[this.workouts.length - 1].locationCoords;
+
+            this._initializeMap(locationCoords);
+
+        } else {
+
+            this._initializeMap();
+        }
     }
 
     // Displaying a Map Using Leaflet Library
@@ -62,6 +75,10 @@ class App {
         }).addTo(this.map);
 
         this.map.on('click', this._clickOnMap.bind(this));
+
+        this._renderAllWorkoutsToScreen();
+
+        this.map.setView(initialLocationCoords, this.mapZoomLevel);
     }
 
     // Displaying a Map Marker
@@ -117,11 +134,11 @@ class App {
 
         this.workouts.push(workout);
 
-        this._renderWorkout(workout);
-
-        this._createWorkoutMarker(workout);
+        this._renderWorkoutAndCreateWorkoutMarker(workout);
 
         this._hideWorkoutForm();
+
+        this._setLocalStorageToWorkouts();
 
         return true;
     }
@@ -356,6 +373,38 @@ class App {
 
         this.map.setView(selectedWorkout.locationCoords, this.mapZoomLevel, mapOptions);
     }
+
+    // Working with localStorage
+
+    _setLocalStorageToWorkouts() {
+
+        localStorage.setItem('workouts', JSON.stringify(this.workouts));
+    }
+
+    _setWorkoutsToLocalStorage() {
+        const data = JSON.parse(localStorage.getItem('workouts'));
+
+        if (!data) return;
+
+        this.workouts = data;
+
+    }
+
+    _renderWorkoutAndCreateWorkoutMarker(workout) {
+
+        this._renderWorkout(workout);
+
+        this._createWorkoutMarker(workout);
+    }
+
+    _renderAllWorkoutsToScreen() {
+        this.workouts.forEach(workout => this._renderWorkoutAndCreateWorkoutMarker(workout));
+    }
+
+    reset() {
+        localStorage.removeItem('workouts');
+        location.reload();
+    }
 }
 
 // Managing Workout Data: Creating Classes
@@ -387,7 +436,7 @@ class Workout {
 
     _getDescription(type, date) {
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        return `${type[0].toUpperCase() + type.slice(1)} on ${months[date.getMonth()]} ${date.getDate()} `;
+        return `${type[0].toUpperCase() + type.slice(1)} on ${months[date.getMonth()]} ${date.getDate()}`;
     }
 }
 
