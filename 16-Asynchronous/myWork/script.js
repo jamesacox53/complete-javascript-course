@@ -9,25 +9,32 @@ const countriesContainer = document.querySelector('.countries');
 
 // https://restcountries.com/v3.1/name/{name}
 
-// Our First AJAX Call: XMLHttpRequest
+// Lecture: Our First AJAX Call: XMLHttpRequest
 
-const dataArrived = function () {
+const _dataArrivedForIndividual = function () {
 
-    const data = JSON.parse(this.responseText)[0];
+    const data = _getCountryData(this);
 
-    const countryCardHTML = createCountryCardHTML(data);
-
-    countriesContainer.insertAdjacentHTML('beforeend', countryCardHTML);
-
-    countriesContainer.style.opacity = 1;
+    _displayCountryDataOnPage(data, 'individual');
 }
 
-const createCountryCardHTML = function (countryDataObject) {
+const _createCountryCardHTML = function (countryDataObject, type) {
+
+
+    let className;
+
+    if (type === 'individual') {
+        className = '';
+    }
+
+    if (type === 'neighbour') {
+        className = 'neighbour';
+    }
 
     const countryLanguages = countryDataObject.languages;
     const countryCurrencies = countryDataObject.currencies;
 
-    const countryCardHTML = `<article class="country"W>
+    const countryCardHTML = `<article class="country ${className}">
         <img class="country__img" src="${countryDataObject.flags.svg}" />
         <div class="country__data">
             <h3 class="country__name">${countryDataObject.name.common}</h3>
@@ -41,16 +48,89 @@ const createCountryCardHTML = function (countryDataObject) {
     return countryCardHTML;
 }
 
-const showCountryData = function (country) {
+const showCountryDataForCountryName = function (countryName) {
+
+    const request = _createAndSendRequestCountryName(countryName);
+
+    request.addEventListener('load', _dataArrivedForIndividual);
+}
+
+// Lecture: Welcome to Callback Hell
+
+const showCountryAndNeighboursData = function (country) {
+
+    const request = _createAndSendRequestCountryName(country);
+
+    request.addEventListener('load', _dataArrivedForIndividualAndNeighbours);
+}
+
+const _getCountryData = function (response) {
+
+    const data = JSON.parse(response.responseText)[0];
+    return data;
+}
+
+const _displayCountryDataOnPage = function (data, type) {
+
+    const countryCardHTML = _createCountryCardHTML(data, type);
+
+    countriesContainer.insertAdjacentHTML('beforeend', countryCardHTML);
+
+    countriesContainer.style.opacity = 1;
+}
+
+const _createAndSendRequestCountryName = function (country) {
 
     const request = new XMLHttpRequest();
     request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
 
     request.send();
 
-    request.addEventListener('load', dataArrived);
+    return request;
 }
 
-showCountryData('usa');
-showCountryData('portugal');
-showCountryData('uk');
+const _dataArrivedForIndividualAndNeighbours = function () {
+
+    const data = _getCountryData(this);
+
+    _displayCountryAndNeighbourDataOnPage(data);
+}
+
+const _displayCountryAndNeighbourDataOnPage = function (data) {
+
+    _displayCountryDataOnPage(data, 'individual');
+
+    const neighbours = data.borders;
+
+    neighbours.forEach((neighbour) => {
+        showCountryDataForNeighbour(neighbour);
+    });
+}
+
+const _createAndSendRequestCountryCode = function (countryCode) {
+
+    const request = new XMLHttpRequest();
+    request.open('GET', `https://restcountries.com/v3.1/alpha/${countryCode}`);
+
+    request.send();
+
+    return request;
+}
+
+const showCountryDataForNeighbour = function (countryCode) {
+
+    const request = _createAndSendRequestCountryCode(countryCode);
+
+    request.addEventListener('load', _dataArrivedForIndividualNeighbour);
+}
+
+const _dataArrivedForIndividualNeighbour = function () {
+
+    const data = _getCountryData(this);
+
+    _displayCountryDataOnPage(data, 'neighbour');
+}
+
+
+
+showCountryAndNeighboursData('sweden');
