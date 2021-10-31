@@ -147,7 +147,7 @@ const _successfullyGotCountryDataViaPromise = function (response) {
 
     response.json().then(function (data) {
         _displayCountryDataOnPage(data[0], 'individual');
-    });
+    }).catch(_catchError);
 }
 
 const _createCountryCardHTML = function (countryDataObject, type) {
@@ -190,39 +190,71 @@ const _displayCountryDataOnPage = function (data, type) {
 
 const showCountryAndNeighboursDataForCountryNameViaPromise = function (country) {
 
-    fetch(`https://restcountries.com/v3.1/name/${country}`).then(_successfullyGotCountryDataViaPromiseForNeighbour);
+    const url = `https://restcountries.com/v3.1/name/${country}`;
+
+    return _getJSON(url, _successfullyGotCountryDataViaPromiseForNeighbour);
 }
 
-const _successfullyGotCountryDataViaPromiseForNeighbour = function (response) {
+const _successfullyGotCountryDataViaPromiseForNeighbour = function (responseJSON) {
 
-    response.json().then(function (dataArr) {
+    responseJSON.then(function (dataArr) {
 
         const data = dataArr[0];
         _displayCountryDataOnPage(data, 'individual');
 
         const neighbours = data.borders;
 
-        console.log(data);
+        if (!neighbours) return;
 
         let neighbourPromises = _showNeighboursDataForCountryNameViaPromise(neighbours[0]);
 
         for (let i = 1; i < neighbours.length; i++) {
             neighbourPromises = neighbourPromises.then(() => _showNeighboursDataForCountryNameViaPromise(neighbours[i]));
         }
-    });
+    }).catch(_catchError);
 }
 
 const _showNeighboursDataForCountryNameViaPromise = function (neighbourCode) {
 
-    return fetch(`https://restcountries.com/v3.1/alpha/${neighbourCode}`).then(_successfullyGotNeighbourCountryDataViaPromise);
+    const url = `https://restcountries.com/v3.1/alpha/${neighbourCode}`;
+
+    return _getJSON(url, _successfullyGotNeighbourCountryDataViaPromise);
 }
 
-const _successfullyGotNeighbourCountryDataViaPromise = function (response) {
+const _successfullyGotNeighbourCountryDataViaPromise = function (responseJSON) {
 
-    return response.json().then(function (data) {
+    return responseJSON.then(function (data) {
         _displayCountryDataOnPage(data[0], 'neighbour');
-    });
+    }).catch(_catchError);
 }
 
+// Lecture: Handling Rejected Promises
 
-showCountryAndNeighboursDataForCountryNameViaPromise('spain');
+const _catchError = function (err) {
+    console.error(`${err}`);
+
+    renderError(`Something went wrong. ${err.message}. Try again!`);
+}
+
+const renderError = function (message) {
+
+    countriesContainer.insertAdjacentText('beforeend', message);
+    countriesContainer.style.opacity = 1;
+}
+
+// Lecture: Throwing Errors Manually
+
+const _getJSON = function (url, callback) {
+
+    return fetch(url).then((response) => {
+        if (!response.ok) {
+            throw new Error(`Country not found. ${response.status}`)
+        }
+        return callback(response.json());
+    }).catch(_catchError);
+}
+
+btn.addEventListener('click', function () {
+    showCountryAndNeighboursDataForCountryNameViaPromise('australia');
+});
+
