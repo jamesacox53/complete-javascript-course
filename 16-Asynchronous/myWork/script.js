@@ -152,7 +152,6 @@ const _successfullyGotCountryDataViaPromise = function (response) {
 
 const _createCountryCardHTML = function (countryDataObject, type) {
 
-
     let className;
 
     if (type === 'individual') {
@@ -189,66 +188,41 @@ const _displayCountryDataOnPage = function (data, type) {
     countriesContainer.style.opacity = 1;
 }
 
-
-showCountryDataForCountryNameViaPromise('portugal');
-
-
-
-
-
-/*
 const showCountryAndNeighboursDataForCountryNameViaPromise = function (country) {
 
     fetch(`https://restcountries.com/v3.1/name/${country}`).then(_successfullyGotCountryDataViaPromiseForNeighbour);
 }
 
-const _createAndSendRequestCountryCode = function (countryCode) {
-
-    const request = new XMLHttpRequest();
-    request.open('GET', `https://restcountries.com/v3.1/alpha/${countryCode}`);
-
-    request.send();
-
-    return request;
-}
-
 const _successfullyGotCountryDataViaPromiseForNeighbour = function (response) {
 
     response.json().then(function (dataArr) {
-        data = dataArr[0];
+
+        const data = dataArr[0];
         _displayCountryDataOnPage(data, 'individual');
 
-        console.log(data);
         const neighbours = data.borders;
 
-        neighbours.forEach((neighbour) => {
-            _showCountryDataForNeighbour(neighbour);
-        });
+        console.log(data);
+
+        let neighbourPromises = _showNeighboursDataForCountryNameViaPromise(neighbours[0]);
+
+        for (let i = 1; i < neighbours.length; i++) {
+            neighbourPromises = neighbourPromises.then(() => _showNeighboursDataForCountryNameViaPromise(neighbours[i]));
+        }
     });
 }
 
-const _createAndSendRequestCountryCode = function (countryCode) {
+const _showNeighboursDataForCountryNameViaPromise = function (neighbourCode) {
 
-    const request = new XMLHttpRequest();
-    request.open('GET', `https://restcountries.com/v3.1/alpha/${countryCode}`);
-
-    request.send();
-
-    return request;
+    return fetch(`https://restcountries.com/v3.1/alpha/${neighbourCode}`).then(_successfullyGotNeighbourCountryDataViaPromise);
 }
 
-const _showCountryDataForNeighbour = function (countryCode) {
+const _successfullyGotNeighbourCountryDataViaPromise = function (response) {
 
-    const request = _createAndSendRequestCountryCode(countryCode);
-
-    request.addEventListener('load', _dataArrivedForIndividualNeighbour);
+    return response.json().then(function (data) {
+        _displayCountryDataOnPage(data[0], 'neighbour');
+    });
 }
 
-const _dataArrivedForIndividualNeighbour = function () {
 
-    const data = _getCountryData(this);
-
-    _displayCountryDataOnPage(data, 'neighbour');
-}
-
-*/
+showCountryAndNeighboursDataForCountryNameViaPromise('spain');
