@@ -138,10 +138,10 @@ const _dataArrivedForIndividualNeighbour = function () {
 
 // Lecture: Consuming Promises
 
-const showCountryDataForCountryNameViaPromise = function (country) {
+// const showCountryDataForCountryNameViaPromise = function (country) {
 
-    fetch(`https://restcountries.com/v3.1/name/${country}`).then(_successfullyGotCountryDataViaPromise);
-}
+//     fetch(`https://restcountries.com/v3.1/name/${country}`).then(_successfullyGotCountryDataViaPromise);
+// }
 
 const _successfullyGotCountryDataViaPromise = function (response) {
 
@@ -254,7 +254,16 @@ const _getJSON = function (url, callback) {
     }).catch(_catchError);
 }
 
-btn.addEventListener('click', function () {
-    showCountryAndNeighboursDataForCountryNameViaPromise('australia');
-});
+// Lecture: Consuming Promises with Async/Await
 
+const showCountryDataForCountryNameViaAsync = async function (country) {
+
+    const response = await fetch(`https://restcountries.com/v3.1/name/${country}`)
+
+
+    _successfullyGotCountryDataViaPromise(response);
+}
+
+btn.addEventListener('click', function () {
+    showCountryDataForCountryNameViaAsync('uk');
+});
