@@ -483,12 +483,10 @@ const controlRecipes = async function() {
 };
 // Lecture: Rendering the Recipe
 // Lecture: Listening For load and hashchange Events
-const events = [
-    'hashchange',
-    'load'
-];
-events.forEach((ev)=>window.addEventListener(ev, controlRecipes)
-);
+const init = function() {
+    _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
+};
+init();
 
 },{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw"}],"95FYz":[function(require,module,exports) {
 require('../modules/es.symbol');
@@ -13757,6 +13755,15 @@ class RecipeView {
         </div> `;
         this._parentElement.innerHTML = '';
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    // Lecture: Event Handlers in MVC: Publisher-Subscriber Pattern
+    addHandlerRender(handler) {
+        const events = [
+            'hashchange',
+            'load'
+        ];
+        events.forEach((ev)=>window.addEventListener(ev, handler)
+        );
     }
 }
 exports.default = new RecipeView();

@@ -127,7 +127,15 @@ class RecipeView {
 
     this._parentElement.innerHTML = '';
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
 
+  // Lecture: Event Handlers in MVC: Publisher-Subscriber Pattern
+
+  addHandlerRender(handler) {
+
+    const events = ['hashchange', 'load'];
+
+    events.forEach(ev => window.addEventListener(ev, handler));
   }
 
 

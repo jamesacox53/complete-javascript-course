@@ -36,6 +36,9 @@ const controlRecipes = async function () {
 
 // Lecture: Listening For load and hashchange Events
 
-const events = ['hashchange', 'load']
+const init = function () {
 
-events.forEach(ev => window.addEventListener(ev, controlRecipes));
+  recipeView.addHandlerRender(controlRecipes);
+}
+
+init();
