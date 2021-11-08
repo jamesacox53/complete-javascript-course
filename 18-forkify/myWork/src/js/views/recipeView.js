@@ -1,3 +1,5 @@
+import View from './View.js';
+
 import icons from 'url:../../img/icons.svg';
 import { Fraction } from 'fractional';
 
@@ -5,24 +7,11 @@ const iconsPath = icons.split('?')[0];
 
 // Lecture: Refactoring for MVC
 
-class RecipeView {
+class RecipeView extends View {
 
   _parentElement = document.querySelector('.recipe');
-  _data;
   _errorMessage = 'We could not find that recipe. Please try another one!';
   _message = '';
-
-  render(data) {
-    this._data = data;
-    const markup = this._generateMarkup();
-    this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
-
-  }
-
-  _clear() {
-    this._parentElement.innerHTML = '';
-  }
 
   _generateMarkup() {
 
@@ -63,9 +52,6 @@ class RecipeView {
         </div>
 
         <div class="recipe__user-generated">
-          <svg>
-            <use href="${iconsPath}#icon-user"></use>
-          </svg>
         </div>
         <button class="btn--round">
           <svg class="">
@@ -118,19 +104,6 @@ class RecipeView {
     }).join('');
   }
 
-  renderSpinner() {
-
-    const markup = `
-            <div class= "spinner">
-            <svg>
-                <use href="${iconsPath}#icon-loader"></use>
-            </svg>
-        </div> `;
-
-    this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
   // Lecture: Event Handlers in MVC: Publisher-Subscriber Pattern
 
   addHandlerRender(handler) {
@@ -139,42 +112,6 @@ class RecipeView {
 
     events.forEach(ev => window.addEventListener(ev, handler));
   }
-
-  // Lecture: Implementing Error and Success Messages
-
-  renderError(message = this._errorMessage) {
-
-    const markup = `
-    <div class="error">
-      <div>
-        <svg>
-          <use href="${iconsPath}#icon-alert-triangle"></use>
-        </svg>
-      </div>
-      <p>${message}</p>
-    </div>`;
-
-    this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
-  renderMessage(message = this._message) {
-
-    const markup = `
-    <div class="message">
-      <div>
-        <svg>
-          <use href="${iconsPath}#icon-smile"></use>
-        </svg>
-      </div>
-      <p>${message}</p>
-    </div>`;
-
-    this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
-
 }
 
 
