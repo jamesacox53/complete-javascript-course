@@ -463,9 +463,10 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _modelJs = require("./model.js");
 var _recipeViewJs = require("./views/recipeView.js");
 var _recipeViewJsDefault = parcelHelpers.interopDefault(_recipeViewJs);
+var _searchViewJs = require("./views/searchView.js");
+var _searchViewJsDefault = parcelHelpers.interopDefault(_searchViewJs);
 var _stable = require("core-js/stable");
 var _runtime = require("regenerator-runtime/runtime");
-const recipeContainer = document.querySelector('.recipe');
 // https://forkify-api.herokuapp.com/v2
 ///////////////////////////////////////
 // Lecture: Loading a Recipe from API
@@ -483,12 +484,22 @@ const controlRecipes = async function() {
 };
 // Lecture: Rendering the Recipe
 // Lecture: Listening For load and hashchange Events
+const controlSearchResults = async function() {
+    try {
+        const query = _searchViewJsDefault.default.getQuery();
+        if (!query) return;
+        await _modelJs.loadSearchResults(query);
+        console.log(_modelJs.state.search);
+    } catch (error) {
+    }
+};
 const init = function() {
     _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
+    _searchViewJsDefault.default.addHandlerSearch(controlSearchResults);
 };
 init();
 
-},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw"}],"95FYz":[function(require,module,exports) {
+},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q"}],"95FYz":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -13568,11 +13579,17 @@ parcelHelpers.export(exports, "state", ()=>state
 );
 parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe
 );
+parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults
+);
 var _regeneratorRuntime = require("regenerator-runtime");
 var _configJs = require("./config.js");
 var _helpersJs = require("./helpers.js");
 const state = {
     recipe: {
+    },
+    search: {
+        query: '',
+        results: []
     }
 };
 const loadRecipe = async function(recipeId) {
@@ -13596,6 +13613,28 @@ const _createRecipeObject = function(data) {
         ingredients: recipeData.ingredients
     };
     return recipe;
+};
+const loadSearchResults = async function(query) {
+    try {
+        const data = await _helpersJs.getJSON(`${_configJs.API_URL}?search=${query}`);
+        state.search.query = query;
+        state.search.results = _createRecipesQueryObject(data);
+    } catch (error) {
+        throw error;
+    }
+};
+const _createRecipesQueryObject = function(data) {
+    const recipesData = data.data.recipes;
+    const recipes = recipesData.map((rec)=>{
+        const recipe = {
+            id: rec.id,
+            title: rec.title,
+            publisher: rec.publisher,
+            image: rec.image_url
+        };
+        return recipe;
+    });
+    return recipes;
 };
 
 },{"regenerator-runtime":"1EBPE","./config.js":"6V52N","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./helpers.js":"9RX9R"}],"6V52N":[function(require,module,exports) {
@@ -14088,6 +14127,29 @@ Fraction.primeFactors = function(n) {
 };
 module.exports.Fraction = Fraction;
 
-},{}]},["kS06O","lA0Es"], "lA0Es", "parcelRequire3a11")
+},{}],"jcq1q":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Lecture: Implementing Search Results - Part 1
+class SearchView {
+    _parentElement = document.querySelector('.search');
+    getQuery() {
+        const query = this._parentElement.querySelector('.search__field').value;
+        this._clearInput();
+        return query;
+    }
+    _clearInput() {
+        this._parentElement.querySelector('.search__field').value = '';
+    }
+    addHandlerSearch(handler) {
+        this._parentElement.addEventListener('submit', function(eventElem) {
+            eventElem.preventDefault();
+            handler();
+        });
+    }
+}
+exports.default = new SearchView();
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["kS06O","lA0Es"], "lA0Es", "parcelRequire3a11")
 
 //# sourceMappingURL=index.05cf099e.js.map
