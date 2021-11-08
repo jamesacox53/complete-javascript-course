@@ -478,7 +478,7 @@ const controlRecipes = async function() {
         await _modelJs.loadRecipe(recipeId);
         _recipeViewJsDefault.default.render(_modelJs.state.recipe);
     } catch (error) {
-        alert(error);
+        _recipeViewJsDefault.default.renderError();
     }
 };
 // Lecture: Rendering the Recipe
@@ -13580,7 +13580,7 @@ const loadRecipe = async function(recipeId) {
         const data = await _helpersJs.getJSON(`${_configJs.API_URL}/${recipeId}`);
         state.recipe = _createRecipeObject(data);
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 };
 const _createRecipeObject = function(data) {
@@ -13648,6 +13648,8 @@ const iconsPath = _iconsSvgDefault.default.split('?')[0];
 class RecipeView {
     _parentElement = document.querySelector('.recipe');
     _data;
+    _errorMessage = 'We could not find that recipe. Please try another one!';
+    _message = '';
     render(data) {
         this._data = data;
         const markup = this._generateMarkup();
@@ -13753,7 +13755,7 @@ class RecipeView {
                 <use href="${iconsPath}#icon-loader"></use>
             </svg>
         </div> `;
-        this._parentElement.innerHTML = '';
+        this._clear();
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
     // Lecture: Event Handlers in MVC: Publisher-Subscriber Pattern
@@ -13764,6 +13766,33 @@ class RecipeView {
         ];
         events.forEach((ev)=>window.addEventListener(ev, handler)
         );
+    }
+    // Lecture: Implementing Error and Success Messages
+    renderError(message = this._errorMessage) {
+        const markup = `
+    <div class="error">
+      <div>
+        <svg>
+          <use href="${iconsPath}#icon-alert-triangle"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>`;
+        this._clear();
+        this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    renderMessage(message = this._message) {
+        const markup = `
+    <div class="message">
+      <div>
+        <svg>
+          <use href="${iconsPath}#icon-smile"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>`;
+        this._clear();
+        this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
 }
 exports.default = new RecipeView();
