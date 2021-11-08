@@ -20,14 +20,17 @@ const timeout = function (s) {
 
 // Lecture: Loading a Recipe from API
 
-const showRecipe = async function () {
+const _showRecipeSelected = async function (recipeId) {
 
   try {
+
+    if (!recipeId) return;
 
     renderSpinner(recipeContainer);
 
     // const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc958`);
-    const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886`);
+    // const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886`);
+    const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/${recipeId}`);
 
     const data = await res.json();
 
@@ -174,4 +177,14 @@ const renderSpinner = function (parentElement) {
 
 }
 
-showRecipe();
+// Lecture: Listening For load and hashchange Events
+
+const showRecipe = function () {
+
+  const recipeId = window.location.hash.slice(1);
+  _showRecipeSelected(recipeId);
+}
+
+const events = ['hashchange', 'load']
+
+events.forEach(ev => window.addEventListener(ev, showRecipe));

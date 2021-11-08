@@ -476,11 +476,13 @@ const timeout = function(s) {
 // https://forkify-api.herokuapp.com/v2
 ///////////////////////////////////////
 // Lecture: Loading a Recipe from API
-const showRecipe = async function() {
+const _showRecipeSelected = async function(recipeId) {
     try {
+        if (!recipeId) return;
         renderSpinner(recipeContainer);
         // const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc958`);
-        const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886`);
+        // const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886`);
+        const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/${recipeId}`);
         const data = await res.json();
         if (!res.ok) throw new Error(`${data.message} (${res.status})`);
         const recipe = _createRecipeObject(data);
@@ -605,9 +607,19 @@ const renderSpinner = function(parentElement) {
     parentElement.innerHTML = '';
     parentElement.insertAdjacentHTML('afterbegin', markup);
 };
-showRecipe();
+// Lecture: Listening For load and hashchange Events
+const showRecipe = function() {
+    const recipeId = window.location.hash.slice(1);
+    _showRecipeSelected(recipeId);
+};
+const events = [
+    'hashchange',
+    'load'
+];
+events.forEach((ev)=>window.addEventListener(ev, showRecipe)
+);
 
-},{"url:../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE"}],"5jwFy":[function(require,module,exports) {
+},{"url:../img/icons.svg":"5jwFy","core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"5jwFy":[function(require,module,exports) {
 module.exports = require('./helpers/bundle-url').getBundleURL('71ti3') + "icons.e7078503.svg" + "?" + Date.now();
 
 },{"./helpers/bundle-url":"chiK4"}],"chiK4":[function(require,module,exports) {
@@ -644,36 +656,6 @@ function getOrigin(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 exports.getOrigin = getOrigin;
-
-},{}],"ciiiV":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, '__esModule', {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === 'default' || key === '__esModule' || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
 
 },{}],"95FYz":[function(require,module,exports) {
 require('../modules/es.symbol');
@@ -13717,6 +13699,36 @@ try {
     if (typeof globalThis === "object") globalThis.regeneratorRuntime = runtime;
     else Function("r", "regeneratorRuntime = r")(runtime);
 }
+
+},{}],"ciiiV":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, '__esModule', {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === 'default' || key === '__esModule' || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
 
 },{}]},["kS06O","lA0Es"], "lA0Es", "parcelRequire3a11")
 
