@@ -467,6 +467,8 @@ var _searchViewJs = require("./views/searchView.js");
 var _searchViewJsDefault = parcelHelpers.interopDefault(_searchViewJs);
 var _resultsViewJs = require("./views/resultsView.js");
 var _resultsViewJsDefault = parcelHelpers.interopDefault(_resultsViewJs);
+var _paginationViewJs = require("./views/paginationView.js");
+var _paginationViewJsDefault = parcelHelpers.interopDefault(_paginationViewJs);
 var _stable = require("core-js/stable");
 var _runtime = require("regenerator-runtime/runtime");
 var _regeneratorRuntime = require("regenerator-runtime");
@@ -494,17 +496,29 @@ const controlSearchResults = async function() {
         const query = _searchViewJsDefault.default.getQuery();
         if (!query) return;
         await _modelJs.loadSearchResults(query);
-        _resultsViewJsDefault.default.render(_modelJs.getSearchResultsPage());
+        // Render search results and Pagination Buttons
+        _renderSearchResultsPage(1);
     } catch (error) {
     }
+};
+// Implementing Pagination - Part 2
+const controlPagination = function(goToPage) {
+    _renderSearchResultsPage(goToPage);
+};
+const _renderSearchResultsPage = function(goToPage) {
+    // Render search results
+    _resultsViewJsDefault.default.render(_modelJs.getSearchResultsPage(goToPage));
+    // Render initial Pagination buttons
+    _paginationViewJsDefault.default.render(_modelJs.state.search);
 };
 const init = function() {
     _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
     _searchViewJsDefault.default.addHandlerSearch(controlSearchResults);
+    _paginationViewJsDefault.default.addHandlerClick(controlPagination);
 };
 init();
 
-},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","regenerator-runtime":"1EBPE"}],"95FYz":[function(require,module,exports) {
+},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","regenerator-runtime":"1EBPE","./views/paginationView.js":"2PAUD"}],"95FYz":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -14212,6 +14226,58 @@ class ResultsView extends _viewJsDefault.default {
     }
 }
 exports.default = new ResultsView();
+
+},{"./View.js":"9dvKv","url:../../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"2PAUD":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js");
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+var _iconsSvg = require("url:../../img/icons.svg");
+var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
+const iconsPath = _iconsSvgDefault.default.split('?')[0];
+// Lecture: Refactoring for MVC
+class PaginationView extends _viewJsDefault.default {
+    _parentElement = document.querySelector('.pagination');
+    _generateMarkup() {
+        const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
+        const currentPage = this._data.page;
+        let markup = '';
+        // render back
+        if (1 < currentPage && currentPage <= numPages) markup += this._getPreviousButtonHTML(currentPage);
+        // render forward
+        if (0 < currentPage && currentPage < numPages) markup += this._getNextButtonHTML(currentPage);
+        return markup;
+    }
+    _getPreviousButtonHTML(currentPage) {
+        return `
+        <button data-goto="${currentPage - 1}" class="btn--inline pagination__btn--prev">
+            <svg class="search__icon">
+              <use href="${iconsPath}#icon-arrow-left"></use>
+            </svg>
+            <span>Page ${currentPage - 1}</span>
+          </button>`;
+    }
+    _getNextButtonHTML(currentPage) {
+        return `
+        <button data-goto="${currentPage + 1}" class="btn--inline pagination__btn--next">
+            <span>Page ${currentPage + 1}</span>
+            <svg class="search__icon">
+              <use href="${iconsPath}#icon-arrow-right"></use>
+            </svg>
+          </button>`;
+    }
+    addHandlerClick(handler) {
+        this._parentElement.addEventListener('click', (eventElem)=>this._paginationClicked(eventElem, handler)
+        );
+    }
+    _paginationClicked(eventElem, handler) {
+        const button = eventElem.target.closest('.btn--inline');
+        if (!button) return;
+        const goToPage = +button.dataset.goto;
+        handler(goToPage);
+    }
+}
+exports.default = new PaginationView();
 
 },{"./View.js":"9dvKv","url:../../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["kS06O","lA0Es"], "lA0Es", "parcelRequire3a11")
 

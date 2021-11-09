@@ -2,6 +2,7 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
+import paginationView from './views/paginationView.js';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -53,17 +54,39 @@ const controlSearchResults = async function () {
 
     await model.loadSearchResults(query);
 
-    resultsView.render(model.getSearchResultsPage());
+    // Render search results and Pagination Buttons
+
+    _renderSearchResultsPage(1);
 
   } catch (error) {
 
   }
 }
 
+// Implementing Pagination - Part 2
+
+const controlPagination = function (goToPage) {
+
+  _renderSearchResultsPage(goToPage);
+
+}
+
+const _renderSearchResultsPage = function (goToPage) {
+  // Render search results
+
+  resultsView.render(model.getSearchResultsPage(goToPage));
+
+  // Render initial Pagination buttons
+
+  paginationView.render(model.state.search);
+
+}
+
 const init = function () {
 
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controlPagination);
 }
 
 init();
