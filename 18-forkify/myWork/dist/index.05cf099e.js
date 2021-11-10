@@ -481,6 +481,8 @@ const controlRecipes = async function() {
         const recipeId = window.location.hash.slice(1);
         if (!recipeId) return;
         _recipeViewJsDefault.default.renderSpinner();
+        // Update results view to mark selected search result
+        _resultsViewJsDefault.default.update(_modelJs.getSearchResultsPage());
         // loading recipe
         await _modelJs.loadRecipe(recipeId);
         _recipeViewJsDefault.default.render(_modelJs.state.recipe);
@@ -516,7 +518,8 @@ const controlServings = function(newServings) {
     // Update the recipe servings (in state),
     _modelJs.updateServings(newServings);
     // Update the recipe view
-    _recipeViewJsDefault.default.render(_modelJs.state.recipe);
+    // recipeView.render(model.state.recipe);
+    _recipeViewJsDefault.default.update(_modelJs.state.recipe);
 };
 const init = function() {
     _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
@@ -13906,6 +13909,26 @@ class View {
         this._clear();
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
+    // Lecture: Developing a DOM Updating Algorithm 
+    update(data) {
+        this._data = data;
+        const newMarkup = this._generateMarkup();
+        const newDOM = document.createRange().createContextualFragment(newMarkup);
+        const newElements = Array.from(newDOM.querySelectorAll('*'));
+        const currentElements = Array.from(this._parentElement.querySelectorAll('*'));
+        newElements.forEach((newElement, i)=>{
+            const currentElement = currentElements[i];
+            // updates changed TEXT
+            if (!newElement.isEqualNode(currentElement) && newElement.firstChild?.nodeValue.trim()) currentElement.textContent = newElement.textContent;
+            // updates changed ATTRIBUTES
+            if (!newElement.isEqualNode(currentElement)) {
+                const attributes = Array.from(newElement.attributes);
+                attributes.forEach((attribute)=>{
+                    currentElement.setAttribute(attribute.name, attribute.value);
+                });
+            }
+        });
+    }
 }
 exports.default = View;
 
@@ -14237,10 +14260,12 @@ class ResultsView extends _viewJsDefault.default {
     _errorMessage = 'No recipes found for your query! Please try again.';
     _message = '';
     _generateMarkup() {
+        const id = window.location.hash.slice(1);
         return this._data.map((recipe)=>{
+            const activeRecipeClass = recipe.id == id ? 'preview__link--active' : '';
             return `
             <li class="preview">
-            <a class="preview__link" href="#${recipe.id}">
+            <a class="preview__link ${activeRecipeClass}" href="#${recipe.id}">
             <figure class="preview__fig">
                 <img src="${recipe.image}" alt="${recipe.title}" />
             </figure>
