@@ -511,14 +511,22 @@ const _renderSearchResultsPage = function(goToPage) {
     // Render initial Pagination buttons
     _paginationViewJsDefault.default.render(_modelJs.state.search);
 };
+// Updating Recipe Servings
+const controlServings = function(newServings) {
+    // Update the recipe servings (in state),
+    _modelJs.updateServings(newServings);
+    // Update the recipe view
+    _recipeViewJsDefault.default.render(_modelJs.state.recipe);
+};
 const init = function() {
     _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
+    _recipeViewJsDefault.default.addHandlerUpdateServings(controlServings);
     _searchViewJsDefault.default.addHandlerSearch(controlSearchResults);
     _paginationViewJsDefault.default.addHandlerClick(controlPagination);
 };
 init();
 
-},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","regenerator-runtime":"1EBPE","./views/paginationView.js":"2PAUD"}],"95FYz":[function(require,module,exports) {
+},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","./views/paginationView.js":"2PAUD","regenerator-runtime":"1EBPE"}],"95FYz":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -13602,6 +13610,8 @@ parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults
 );
 parcelHelpers.export(exports, "getSearchResultsPage", ()=>getSearchResultsPage
 );
+parcelHelpers.export(exports, "updateServings", ()=>updateServings
+);
 var _regeneratorRuntime = require("regenerator-runtime");
 var _configJs = require("./config.js");
 var _helpersJs = require("./helpers.js");
@@ -13664,6 +13674,14 @@ const getSearchResultsPage = function(page = state.search.page) {
     const start = (page - 1) * state.search.resultsPerPage;
     const end = page * state.search.resultsPerPage;
     return state.search.results.slice(start, end);
+};
+const updateServings = function(newServings) {
+    const ingredients = state.recipe.ingredients;
+    const oldServings = state.recipe.servings;
+    ingredients.forEach((ingredient)=>{
+        ingredient.quantity = ingredient.quantity * (newServings / oldServings);
+    });
+    state.recipe.servings = newServings;
 };
 
 },{"regenerator-runtime":"1EBPE","./config.js":"6V52N","./helpers.js":"9RX9R","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"6V52N":[function(require,module,exports) {
@@ -13746,12 +13764,12 @@ class RecipeView extends _viewJsDefault.default {
           <span class="recipe__info-text">servings</span>
 
           <div class="recipe__info-buttons">
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--update-servings" data-update-to="${this._data.servings - 1}">
               <svg>
                 <use href="${iconsPath}#icon-minus-circle"></use>
               </svg>
             </button>
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--update-servings" data-update-to="${this._data.servings + 1}">
               <svg>
                 <use href="${iconsPath}#icon-plus-circle"></use>
               </svg>
@@ -13816,6 +13834,16 @@ class RecipeView extends _viewJsDefault.default {
         ];
         events.forEach((ev)=>window.addEventListener(ev, handler)
         );
+    }
+    addHandlerUpdateServings(handler) {
+        this._parentElement.addEventListener('click', (eventElem)=>this._servingsButtonsClicked(eventElem, handler)
+        );
+    }
+    _servingsButtonsClicked(eventElem, handler) {
+        const button = eventElem.target.closest('.btn--update-servings');
+        if (!button) return;
+        const updateServingTo = +button.dataset.updateTo;
+        if (updateServingTo > 0) handler(updateServingTo);
     }
 }
 exports.default = new RecipeView();
