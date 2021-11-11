@@ -4,12 +4,10 @@ import previewView from './previewView.js';
 
 // const iconsPath = icons.split('?')[0];
 
-// Implementing Search Results - Part 2
+class BookmarksView extends previewView {
 
-class ResultsView extends previewView {
-
-    _parentElement = document.querySelector('.results');
-    _errorMessage = 'No recipes found for your query! Please try again.';
+    _parentElement = document.querySelector('.bookmarks__list');
+    _errorMessage = 'No bookmarks yet. Find a recipe you like and bookmark it :)';
     _message = '';
 
     // _generateMarkup() {
@@ -36,4 +34,4 @@ class ResultsView extends previewView {
     // }
 }
 
-export default new ResultsView();
+export default new BookmarksView();
