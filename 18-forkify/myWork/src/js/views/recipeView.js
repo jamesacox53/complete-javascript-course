@@ -15,6 +15,8 @@ class RecipeView extends View {
 
   _generateMarkup() {
 
+    const bookmarked = this._data.bookmarked ? '-fill' : '';
+
     return `<figure class="recipe__fig">
         <img src="${this._data.image}" alt="${this._data.title}" class="recipe__img" />
         <h1 class="recipe__title">
@@ -53,9 +55,9 @@ class RecipeView extends View {
 
         <div class="recipe__user-generated">
         </div>
-        <button class="btn--round">
+        <button class="btn--round btn--bookmark">
           <svg class="">
-            <use href="${iconsPath}#icon-bookmark-fill"></use>
+            <use href="${iconsPath}#icon-bookmark${bookmarked}"></use>
           </svg>
         </button>
       </div>
@@ -128,7 +130,21 @@ class RecipeView extends View {
 
     if (updateServingTo > 0) handler(updateServingTo);
   }
-}
 
+  addHandlerAddBookmark(handler) {
+
+    this._parentElement.addEventListener('click', (eventElem) => this._addBookmark(eventElem, handler));
+  }
+
+  _addBookmark(eventElem, handler) {
+
+    const bookmarkButton = eventElem.target.closest('.btn--bookmark');
+
+    if (!bookmarkButton) return;
+
+    handler();
+  }
+
+}
 
 export default new RecipeView();

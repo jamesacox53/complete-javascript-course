@@ -11,6 +11,7 @@ export const state = {
         resultsPerPage: RESULTS_PER_PAGE,
         page: 1,
     },
+    bookmarks: [],
 }
 
 export const loadRecipe = async function (recipeId) {
@@ -41,6 +42,12 @@ const _createRecipeObject = function (data) {
         cookingTime: recipeData.cooking_time,
         ingredients: recipeData.ingredients,
     };
+
+    if (state.bookmarks.some(bookmarkedRecipe => bookmarkedRecipe.id === recipe.id)) {
+        recipe.bookmarked = true;
+    } else {
+        recipe.bookmarked = false;
+    }
 
     return recipe;
 }
@@ -107,4 +114,31 @@ export const updateServings = function (newServings) {
     });
 
     state.recipe.servings = newServings;
+}
+
+// Lecture: Implementing Bookmarks - Part 1
+
+export const addBookmark = function (recipe) {
+
+    // Add bookmark
+    state.bookmarks.push(recipe);
+
+    // Mark current recipe as bookmark
+    if (recipe.id === state.recipe.id) {
+        state.recipe.bookmarked = true;
+    }
+}
+
+export const deleteBookmark = function (recipeId) {
+
+    // Delete bookmark
+    const index = state.bookmarks.findIndex(bookmarkedRecipe => bookmarkedRecipe.id === recipeId);
+
+    state.bookmarks.splice(index, 1);
+
+    // Mark current recipe as NOT bookmarked
+    if (recipeId === state.recipe.id) {
+        state.recipe.bookmarked = false;
+    }
+
 }
