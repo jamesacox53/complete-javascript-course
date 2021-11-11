@@ -127,6 +127,7 @@ export const addBookmark = function (recipe) {
     if (recipe.id === state.recipe.id) {
         state.recipe.bookmarked = true;
     }
+    _persistBookmarks();
 }
 
 export const deleteBookmark = function (recipeId) {
@@ -141,4 +142,29 @@ export const deleteBookmark = function (recipeId) {
         state.recipe.bookmarked = false;
     }
 
+    _persistBookmarks();
 }
+
+// Lecture: Storing Bookmarks With localStorage
+
+const _persistBookmarks = function () {
+
+    localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+}
+
+const clearBookmarks = function () {
+
+    localStorage.clear('bookmarks');
+}
+
+
+const init = function () {
+
+    const storage = localStorage.getItem('bookmarks');
+
+    if (storage) {
+        state.bookmarks = JSON.parse(storage);
+    }
+}
+
+init();

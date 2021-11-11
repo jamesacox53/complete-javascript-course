@@ -533,7 +533,11 @@ const controlAddBookmark = function() {
     // Render bookmarks
     _bookmarksViewJsDefault.default.render(_modelJs.state.bookmarks);
 };
+const controlBookmarks = function() {
+    _bookmarksViewJsDefault.default.render(_modelJs.state.bookmarks);
+};
 const init = function() {
+    _bookmarksViewJsDefault.default.addHandlerRender(controlBookmarks);
     _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
     _recipeViewJsDefault.default.addHandlerUpdateServings(controlServings);
     _recipeViewJsDefault.default.addHandlerAddBookmark(controlAddBookmark);
@@ -13712,6 +13716,7 @@ const addBookmark = function(recipe) {
     state.bookmarks.push(recipe);
     // Mark current recipe as bookmark
     if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+    _persistBookmarks();
 };
 const deleteBookmark = function(recipeId) {
     // Delete bookmark
@@ -13720,7 +13725,20 @@ const deleteBookmark = function(recipeId) {
     state.bookmarks.splice(index, 1);
     // Mark current recipe as NOT bookmarked
     if (recipeId === state.recipe.id) state.recipe.bookmarked = false;
+    _persistBookmarks();
 };
+// Lecture: Storing Bookmarks With localStorage
+const _persistBookmarks = function() {
+    localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+const clearBookmarks = function() {
+    localStorage.clear('bookmarks');
+};
+const init = function() {
+    const storage = localStorage.getItem('bookmarks');
+    if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();
 
 },{"regenerator-runtime":"1EBPE","./config.js":"6V52N","./helpers.js":"9RX9R","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"6V52N":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -14402,6 +14420,27 @@ class BookmarksView extends _previewViewJsDefault.default {
     _parentElement = document.querySelector('.bookmarks__list');
     _errorMessage = 'No bookmarks yet. Find a recipe you like and bookmark it :)';
     _message = '';
+    // _generateMarkup() {
+    //     const id = window.location.hash.slice(1);
+    //     return this._data.map(recipe => {
+    //         const activeRecipeClass = recipe.id == id ? 'preview__link--active' : '';
+    //         return `
+    //         <li class="preview">
+    //         <a class="preview__link ${activeRecipeClass}" href="#${recipe.id}">
+    //         <figure class="preview__fig">
+    //             <img src="${recipe.image}" alt="${recipe.title}" />
+    //         </figure>
+    //         <div class="preview__data">
+    //             <h4 class="preview__title">${recipe.title}</h4>
+    //             <p class="preview__publisher">${recipe.publisher}</p>
+    //         </div>
+    //     </a>
+    //     </li>`
+    //     }).join('');
+    // }
+    addHandlerRender(handler) {
+        window.addEventListener('load', handler);
+    }
 }
 exports.default = new BookmarksView();
 
