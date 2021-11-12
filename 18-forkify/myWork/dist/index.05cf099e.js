@@ -471,6 +471,8 @@ var _bookmarksViewJs = require("./views/bookmarksView.js");
 var _bookmarksViewJsDefault = parcelHelpers.interopDefault(_bookmarksViewJs);
 var _paginationViewJs = require("./views/paginationView.js");
 var _paginationViewJsDefault = parcelHelpers.interopDefault(_paginationViewJs);
+var _addRecipeViewJs = require("./views/addRecipeView.js");
+var _addRecipeViewJsDefault = parcelHelpers.interopDefault(_addRecipeViewJs);
 var _stable = require("core-js/stable");
 var _runtime = require("regenerator-runtime/runtime");
 var _regeneratorRuntime = require("regenerator-runtime");
@@ -536,6 +538,10 @@ const controlAddBookmark = function() {
 const controlBookmarks = function() {
     _bookmarksViewJsDefault.default.render(_modelJs.state.bookmarks);
 };
+const controlAddRecipe = function(newRecipe) {
+    console.log(newRecipe);
+// Upload new recipe data
+};
 const init = function() {
     _bookmarksViewJsDefault.default.addHandlerRender(controlBookmarks);
     _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
@@ -543,10 +549,11 @@ const init = function() {
     _recipeViewJsDefault.default.addHandlerAddBookmark(controlAddBookmark);
     _searchViewJsDefault.default.addHandlerSearch(controlSearchResults);
     _paginationViewJsDefault.default.addHandlerClick(controlPagination);
+    _addRecipeViewJsDefault.default.addHandlerUpload(controlAddRecipe);
 };
 init();
 
-},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","./views/paginationView.js":"2PAUD","regenerator-runtime":"1EBPE","./views/bookmarksView.js":"764v9"}],"95FYz":[function(require,module,exports) {
+},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","./views/bookmarksView.js":"764v9","./views/paginationView.js":"2PAUD","regenerator-runtime":"1EBPE","./views/addRecipeView.js":"Lo2AT"}],"95FYz":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -14325,7 +14332,7 @@ class ResultsView extends _previewViewJsDefault.default {
 }
 exports.default = new ResultsView();
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./previewView.js":"i65ZK"}],"i65ZK":[function(require,module,exports) {
+},{"./previewView.js":"i65ZK","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"i65ZK":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _viewJs = require("./View.js");
@@ -14356,7 +14363,43 @@ class PreviewView extends _viewJsDefault.default {
 }
 exports.default = PreviewView;
 
-},{"./View.js":"9dvKv","url:../../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"2PAUD":[function(require,module,exports) {
+},{"./View.js":"9dvKv","url:../../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"764v9":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// import View from './View.js';
+var _previewViewJs = require("./previewView.js");
+var _previewViewJsDefault = parcelHelpers.interopDefault(_previewViewJs);
+// import icons from 'url:../../img/icons.svg';
+// const iconsPath = icons.split('?')[0];
+class BookmarksView extends _previewViewJsDefault.default {
+    _parentElement = document.querySelector('.bookmarks__list');
+    _errorMessage = 'No bookmarks yet. Find a recipe you like and bookmark it :)';
+    _message = '';
+    // _generateMarkup() {
+    //     const id = window.location.hash.slice(1);
+    //     return this._data.map(recipe => {
+    //         const activeRecipeClass = recipe.id == id ? 'preview__link--active' : '';
+    //         return `
+    //         <li class="preview">
+    //         <a class="preview__link ${activeRecipeClass}" href="#${recipe.id}">
+    //         <figure class="preview__fig">
+    //             <img src="${recipe.image}" alt="${recipe.title}" />
+    //         </figure>
+    //         <div class="preview__data">
+    //             <h4 class="preview__title">${recipe.title}</h4>
+    //             <p class="preview__publisher">${recipe.publisher}</p>
+    //         </div>
+    //     </a>
+    //     </li>`
+    //     }).join('');
+    // }
+    addHandlerRender(handler) {
+        window.addEventListener('load', handler);
+    }
+}
+exports.default = new BookmarksView();
+
+},{"./previewView.js":"i65ZK","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"2PAUD":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _viewJs = require("./View.js");
@@ -14408,42 +14451,52 @@ class PaginationView extends _viewJsDefault.default {
 }
 exports.default = new PaginationView();
 
-},{"./View.js":"9dvKv","url:../../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"764v9":[function(require,module,exports) {
+},{"./View.js":"9dvKv","url:../../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"Lo2AT":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-// import View from './View.js';
-var _previewViewJs = require("./previewView.js");
-var _previewViewJsDefault = parcelHelpers.interopDefault(_previewViewJs);
-// import icons from 'url:../../img/icons.svg';
-// const iconsPath = icons.split('?')[0];
-class BookmarksView extends _previewViewJsDefault.default {
-    _parentElement = document.querySelector('.bookmarks__list');
-    _errorMessage = 'No bookmarks yet. Find a recipe you like and bookmark it :)';
-    _message = '';
-    // _generateMarkup() {
-    //     const id = window.location.hash.slice(1);
-    //     return this._data.map(recipe => {
-    //         const activeRecipeClass = recipe.id == id ? 'preview__link--active' : '';
-    //         return `
-    //         <li class="preview">
-    //         <a class="preview__link ${activeRecipeClass}" href="#${recipe.id}">
-    //         <figure class="preview__fig">
-    //             <img src="${recipe.image}" alt="${recipe.title}" />
-    //         </figure>
-    //         <div class="preview__data">
-    //             <h4 class="preview__title">${recipe.title}</h4>
-    //             <p class="preview__publisher">${recipe.publisher}</p>
-    //         </div>
-    //     </a>
-    //     </li>`
-    //     }).join('');
-    // }
-    addHandlerRender(handler) {
-        window.addEventListener('load', handler);
+var _viewJs = require("./View.js");
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+var _iconsSvg = require("url:../../img/icons.svg");
+var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
+const iconsPath = _iconsSvgDefault.default.split('?')[0];
+// Lecture: Uploading a New Recipe - Part 1
+class AddRecipeView extends _viewJsDefault.default {
+    _parentElement = document.querySelector('.upload');
+    _window = document.querySelector('.add-recipe-window');
+    _overlay = document.querySelector('.overlay');
+    _buttonOpen = document.querySelector('.nav__btn--add-recipe');
+    _buttonClose = document.querySelector('.btn--close-modal');
+    constructor(){
+        super();
+        this._addHandlerShowWindow();
+        this._addHandlerHideWindow();
+    }
+    _addHandlerShowWindow() {
+        this._buttonOpen.addEventListener('click', this._toggleWindow.bind(this));
+    }
+    _toggleWindow() {
+        this._overlay.classList.toggle('hidden');
+        this._window.classList.toggle('hidden');
+    }
+    _addHandlerHideWindow() {
+        this._buttonClose.addEventListener('click', this._toggleWindow.bind(this));
+        this._overlay.addEventListener('click', this._toggleWindow.bind(this));
+    }
+    addHandlerUpload(handler) {
+        this._parentElement.addEventListener('submit', function(eventElem) {
+            eventElem.preventDefault();
+            const dataArray = [
+                ...new FormData(this)
+            ];
+            const data = Object.fromEntries(dataArray);
+            handler(data);
+        });
+    }
+    _generateMarkup() {
     }
 }
-exports.default = new BookmarksView();
+exports.default = new AddRecipeView();
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./previewView.js":"i65ZK"}]},["kS06O","lA0Es"], "lA0Es", "parcelRequire3a11")
+},{"./View.js":"9dvKv","url:../../img/icons.svg":"5jwFy","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["kS06O","lA0Es"], "lA0Es", "parcelRequire3a11")
 
 //# sourceMappingURL=index.05cf099e.js.map
