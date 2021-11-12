@@ -461,6 +461,7 @@ function hmrAcceptRun(bundle, id) {
 },{}],"lA0Es":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _modelJs = require("./model.js");
+var _configJs = require("./config.js");
 var _recipeViewJs = require("./views/recipeView.js");
 var _recipeViewJsDefault = parcelHelpers.interopDefault(_recipeViewJs);
 var _searchViewJs = require("./views/searchView.js");
@@ -538,9 +539,25 @@ const controlAddBookmark = function() {
 const controlBookmarks = function() {
     _bookmarksViewJsDefault.default.render(_modelJs.state.bookmarks);
 };
-const controlAddRecipe = function(newRecipe) {
-    console.log(newRecipe);
-// Upload new recipe data
+const controlAddRecipe = async function(newRecipe) {
+    try {
+        console.log(newRecipe);
+        // Show loading spinner
+        _addRecipeViewJsDefault.default.renderSpinner();
+        // Upload new recipe data
+        await _modelJs.uploadRecipe(newRecipe);
+        // Render recipe
+        _recipeViewJsDefault.default.render(_modelJs.state.recipe);
+        // Display success message
+        _addRecipeViewJsDefault.default.renderMessage();
+        // Close form window
+        setTimeout(function() {
+            _addRecipeViewJsDefault.default.toggleWindow();
+        }, _configJs.MODAL_CLOSE_SEC * 1000);
+    } catch (error) {
+        // console.error(error);
+        _addRecipeViewJsDefault.default.renderError(error.message);
+    }
 };
 const init = function() {
     _bookmarksViewJsDefault.default.addHandlerRender(controlBookmarks);
@@ -553,7 +570,7 @@ const init = function() {
 };
 init();
 
-},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","./views/bookmarksView.js":"764v9","./views/paginationView.js":"2PAUD","regenerator-runtime":"1EBPE","./views/addRecipeView.js":"Lo2AT"}],"95FYz":[function(require,module,exports) {
+},{"core-js/stable":"95FYz","regenerator-runtime/runtime":"1EBPE","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./model.js":"1pVJj","./views/recipeView.js":"82pEw","./views/searchView.js":"jcq1q","./views/resultsView.js":"5peDB","./views/bookmarksView.js":"764v9","./views/paginationView.js":"2PAUD","regenerator-runtime":"1EBPE","./views/addRecipeView.js":"Lo2AT","./config.js":"6V52N"}],"95FYz":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -13643,6 +13660,8 @@ parcelHelpers.export(exports, "addBookmark", ()=>addBookmark
 );
 parcelHelpers.export(exports, "deleteBookmark", ()=>deleteBookmark
 );
+parcelHelpers.export(exports, "uploadRecipe", ()=>uploadRecipe
+);
 var _regeneratorRuntime = require("regenerator-runtime");
 var _configJs = require("./config.js");
 var _helpersJs = require("./helpers.js");
@@ -13680,6 +13699,7 @@ const _createRecipeObject = function(data) {
     if (state.bookmarks.some((bookmarkedRecipe)=>bookmarkedRecipe.id === recipe.id
     )) recipe.bookmarked = true;
     else recipe.bookmarked = false;
+    if (recipeData.key) recipe.key = recipeData.key;
     return recipe;
 };
 const loadSearchResults = async function(query) {
@@ -13745,7 +13765,52 @@ const init = function() {
     const storage = localStorage.getItem('bookmarks');
     if (storage) state.bookmarks = JSON.parse(storage);
 };
-init();
+const uploadRecipe = async function(newRecipe) {
+    try {
+        const recipe = _createRecipeForAPI(newRecipe);
+        console.log(recipe);
+        const data = await _helpersJs.sendJSON(`${_configJs.API_URL}/?key=${_configJs.KEY}`, recipe);
+        state.recipe = _createRecipeObject(data);
+        addBookmark(state.recipe);
+        console.log(state.recipe);
+    } catch (error) {
+        throw error;
+    }
+};
+const _createRecipeForAPI = function(newRecipe) {
+    const recipe = {
+        title: newRecipe.title,
+        source_url: newRecipe.sourceUrl,
+        image_url: newRecipe.image,
+        publisher: newRecipe.publisher,
+        cooking_time: +newRecipe.cookingTime,
+        servings: +newRecipe.servings,
+        ingredients: _getIngredientsFromUser(newRecipe)
+    };
+    return recipe;
+};
+const _getIngredientsFromUser = function(newRecipe) {
+    const ingredients = [];
+    let i = 1;
+    let hasIngredientI;
+    do {
+        const ingredient = newRecipe[`ingredient-${i}`];
+        if (ingredient) {
+            hasIngredientI = true;
+            const ingredientParts = ingredient.replaceAll(' ', '').split(',');
+            if (ingredientParts.length !== 3) throw new Error('Wrong ingredient format! Please use the correct format :)');
+            const ingredientObject = {
+                quantity: ingredientParts[0] ? +ingredientParts[0] : null,
+                unit: ingredientParts[1],
+                description: ingredientParts[2]
+            };
+            ingredients.push(ingredientObject);
+            i++;
+        } else hasIngredientI = false;
+    }while (hasIngredientI)
+    return ingredients;
+};
+init(); // clearBookmarks();
 
 },{"regenerator-runtime":"1EBPE","./config.js":"6V52N","./helpers.js":"9RX9R","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"6V52N":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -13756,14 +13821,22 @@ parcelHelpers.export(exports, "TIMEOUT_SEC", ()=>TIMEOUT_SEC
 );
 parcelHelpers.export(exports, "RESULTS_PER_PAGE", ()=>RESULTS_PER_PAGE
 );
+parcelHelpers.export(exports, "KEY", ()=>KEY
+);
+parcelHelpers.export(exports, "MODAL_CLOSE_SEC", ()=>MODAL_CLOSE_SEC
+);
 const API_URL = `https://forkify-api.herokuapp.com/api/v2/recipes`;
 const TIMEOUT_SEC = 5;
 const RESULTS_PER_PAGE = 10;
+const KEY = 'b5c5e52c-713f-4be2-9f26-7ee30fb0b180';
+const MODAL_CLOSE_SEC = 2.5;
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"9RX9R":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "getJSON", ()=>getJSON
+);
+parcelHelpers.export(exports, "sendJSON", ()=>sendJSON
 );
 var _regeneratorRuntime = require("regenerator-runtime");
 var _configJs = require("./config.js");
@@ -13779,6 +13852,27 @@ const getJSON = async function(url) {
     try {
         const res = await Promise.race([
             fetch(url),
+            timeout(_configJs.TIMEOUT_SEC)
+        ]);
+        const data = await res.json();
+        if (!res.ok) throw new Error(`${data.message} (${res.status})`);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+const sendJSON = async function(url, uploadData) {
+    try {
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(uploadData)
+        };
+        const fetchPromise = fetch(url, fetchOptions);
+        const res = await Promise.race([
+            fetchPromise,
             timeout(_configJs.TIMEOUT_SEC)
         ]);
         const data = await res.json();
@@ -14462,6 +14556,7 @@ const iconsPath = _iconsSvgDefault.default.split('?')[0];
 // Lecture: Uploading a New Recipe - Part 1
 class AddRecipeView extends _viewJsDefault.default {
     _parentElement = document.querySelector('.upload');
+    _message = 'Recipe was successfully uploaded :)';
     _window = document.querySelector('.add-recipe-window');
     _overlay = document.querySelector('.overlay');
     _buttonOpen = document.querySelector('.nav__btn--add-recipe');
@@ -14472,15 +14567,15 @@ class AddRecipeView extends _viewJsDefault.default {
         this._addHandlerHideWindow();
     }
     _addHandlerShowWindow() {
-        this._buttonOpen.addEventListener('click', this._toggleWindow.bind(this));
+        this._buttonOpen.addEventListener('click', this.toggleWindow.bind(this));
     }
-    _toggleWindow() {
+    toggleWindow() {
         this._overlay.classList.toggle('hidden');
         this._window.classList.toggle('hidden');
     }
     _addHandlerHideWindow() {
-        this._buttonClose.addEventListener('click', this._toggleWindow.bind(this));
-        this._overlay.addEventListener('click', this._toggleWindow.bind(this));
+        this._buttonClose.addEventListener('click', this.toggleWindow.bind(this));
+        this._overlay.addEventListener('click', this.toggleWindow.bind(this));
     }
     addHandlerUpload(handler) {
         this._parentElement.addEventListener('submit', function(eventElem) {

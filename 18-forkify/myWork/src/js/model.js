@@ -1,6 +1,6 @@
 import { async } from 'regenerator-runtime';
-import { API_URL, RESULTS_PER_PAGE } from './config.js';
-import { getJSON } from './helpers.js';
+import { API_URL, RESULTS_PER_PAGE, KEY } from './config.js';
+import { getJSON, sendJSON } from './helpers.js';
 
 export const state = {
 
@@ -47,6 +47,10 @@ const _createRecipeObject = function (data) {
         recipe.bookmarked = true;
     } else {
         recipe.bookmarked = false;
+    }
+
+    if (recipeData.key) {
+        recipe.key = recipeData.key;
     }
 
     return recipe;
@@ -167,4 +171,81 @@ const init = function () {
     }
 }
 
+// Lecture: Uploading a New Recipe - Part 2
+
+export const uploadRecipe = async function (newRecipe) {
+    try {
+        const recipe = _createRecipeForAPI(newRecipe);
+        console.log(recipe);
+
+        const data = await sendJSON(`${API_URL}/?key=${KEY}`, recipe);
+
+        state.recipe = _createRecipeObject(data);
+
+        addBookmark(state.recipe);
+
+        console.log(state.recipe);
+
+    } catch (error) {
+        throw error;
+    }
+
+}
+
+const _createRecipeForAPI = function (newRecipe) {
+
+    const recipe = {
+
+        title: newRecipe.title,
+        source_url: newRecipe.sourceUrl,
+        image_url: newRecipe.image,
+        publisher: newRecipe.publisher,
+        cooking_time: +(newRecipe.cookingTime),
+        servings: +(newRecipe.servings),
+        ingredients: _getIngredientsFromUser(newRecipe),
+    }
+    return recipe;
+}
+
+const _getIngredientsFromUser = function (newRecipe) {
+
+    const ingredients = []
+
+    let i = 1;
+    let hasIngredientI;
+
+    do {
+
+        const ingredient = newRecipe[`ingredient-${i}`];
+
+        if (ingredient) {
+
+            hasIngredientI = true;
+            const ingredientParts = ingredient.replaceAll(' ', '').split(',');
+
+            if (ingredientParts.length !== 3) {
+
+                throw new Error('Wrong ingredient format! Please use the correct format :)');
+            }
+
+            const ingredientObject = {
+                quantity: ingredientParts[0] ? +(ingredientParts[0]) : null,
+                unit: ingredientParts[1],
+                description: ingredientParts[2],
+            };
+
+            ingredients.push(ingredientObject);
+            i++;
+        } else {
+
+            hasIngredientI = false;
+        }
+
+    } while (hasIngredientI)
+
+    return ingredients;
+}
+
 init();
+
+// clearBookmarks();

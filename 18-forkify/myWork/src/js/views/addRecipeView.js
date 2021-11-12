@@ -9,6 +9,8 @@ const iconsPath = icons.split('?')[0];
 class AddRecipeView extends View {
 
     _parentElement = document.querySelector('.upload');
+    _message = 'Recipe was successfully uploaded :)'
+
     _window = document.querySelector('.add-recipe-window');
     _overlay = document.querySelector('.overlay');
     _buttonOpen = document.querySelector('.nav__btn--add-recipe');
@@ -22,10 +24,10 @@ class AddRecipeView extends View {
 
     _addHandlerShowWindow() {
 
-        this._buttonOpen.addEventListener('click', this._toggleWindow.bind(this));
+        this._buttonOpen.addEventListener('click', this.toggleWindow.bind(this));
     }
 
-    _toggleWindow() {
+    toggleWindow() {
 
         this._overlay.classList.toggle('hidden');
         this._window.classList.toggle('hidden');
@@ -33,8 +35,8 @@ class AddRecipeView extends View {
 
     _addHandlerHideWindow() {
 
-        this._buttonClose.addEventListener('click', this._toggleWindow.bind(this));
-        this._overlay.addEventListener('click', this._toggleWindow.bind(this));
+        this._buttonClose.addEventListener('click', this.toggleWindow.bind(this));
+        this._overlay.addEventListener('click', this.toggleWindow.bind(this));
 
     }
 
