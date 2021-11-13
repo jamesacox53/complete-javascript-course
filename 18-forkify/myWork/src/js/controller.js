@@ -128,7 +128,6 @@ const controlBookmarks = function () {
 const controlAddRecipe = async function (newRecipe) {
 
   try {
-    console.log(newRecipe);
 
     // Show loading spinner
     addRecipeView.renderSpinner();

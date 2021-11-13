@@ -181,15 +181,12 @@ const init = function () {
 export const uploadRecipe = async function (newRecipe) {
     try {
         const recipe = _createRecipeForAPI(newRecipe);
-        console.log(recipe);
 
         const data = await AJAX(`${API_URL}/?key=${KEY}`, recipe);
 
         state.recipe = _createRecipeObject(data);
 
         addBookmark(state.recipe);
-
-        console.log(state.recipe);
 
     } catch (error) {
         throw error;
