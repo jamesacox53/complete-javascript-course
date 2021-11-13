@@ -11,6 +11,44 @@ const timeout = function (s) {
     });
 };
 
+// Lecture: Uploading a New Recipe - Part 3
+
+export const AJAX = async function (url, uploadData = undefined) {
+
+    try {
+
+        let fetchPromise;
+
+        if (uploadData) {
+
+            const fetchOptions = {
+
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(uploadData),
+            };
+
+            fetchPromise = fetch(url, fetchOptions);
+
+        } else {
+
+            fetchPromise = fetch(url);
+        }
+
+        const res = await Promise.race([fetchPromise, timeout(TIMEOUT_SEC)]);
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(`${data.message} (${res.status})`);
+
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/*
 export const getJSON = async function (url) {
 
     try {
@@ -50,3 +88,4 @@ export const sendJSON = async function (url, uploadData) {
         throw error;
     }
 }
+*/

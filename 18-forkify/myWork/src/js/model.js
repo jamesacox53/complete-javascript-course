@@ -1,6 +1,7 @@
 import { async } from 'regenerator-runtime';
 import { API_URL, RESULTS_PER_PAGE, KEY } from './config.js';
-import { getJSON, sendJSON } from './helpers.js';
+import { AJAX } from './helpers.js';
+// import { getJSON, sendJSON } from './helpers.js';
 
 export const state = {
 
@@ -18,7 +19,7 @@ export const loadRecipe = async function (recipeId) {
 
     try {
 
-        const data = await getJSON(`${API_URL}/${recipeId}`);
+        const data = await AJAX(`${API_URL}/${recipeId}?key=${KEY}`);
 
         state.recipe = _createRecipeObject(data);
 
@@ -62,7 +63,7 @@ export const loadSearchResults = async function (query) {
 
     try {
 
-        const data = await getJSON(`${API_URL}?search=${query}`);
+        const data = await AJAX(`${API_URL}?search=${query}&key=${KEY}`);
 
         state.search.query = query;
 
@@ -87,6 +88,10 @@ const _createRecipesQueryObject = function (data) {
             publisher: rec.publisher,
             image: rec.image_url,
         };
+
+        if (rec.key) {
+            recipe.key = rec.key;
+        }
 
         return recipe;
     });
@@ -178,7 +183,7 @@ export const uploadRecipe = async function (newRecipe) {
         const recipe = _createRecipeForAPI(newRecipe);
         console.log(recipe);
 
-        const data = await sendJSON(`${API_URL}/?key=${KEY}`, recipe);
+        const data = await AJAX(`${API_URL}/?key=${KEY}`, recipe);
 
         state.recipe = _createRecipeObject(data);
 
@@ -221,12 +226,14 @@ const _getIngredientsFromUser = function (newRecipe) {
         if (ingredient) {
 
             hasIngredientI = true;
-            const ingredientParts = ingredient.replaceAll(' ', '').split(',');
+            let ingredientParts = ingredient.split(',');
 
             if (ingredientParts.length !== 3) {
 
                 throw new Error('Wrong ingredient format! Please use the correct format :)');
             }
+
+            ingredientParts = ingredientParts.map(ing => ing.trim());
 
             const ingredientObject = {
                 quantity: ingredientParts[0] ? +(ingredientParts[0]) : null,

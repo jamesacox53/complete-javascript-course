@@ -14,6 +14,7 @@ class PreviewView extends View {
         return this._data.map(recipe => {
 
             const activeRecipeClass = recipe.id == id ? 'preview__link--active' : '';
+            const userCreatedRecipe = recipe.key ? '' : 'hidden';
 
             return `
             <li class="preview">
@@ -24,7 +25,12 @@ class PreviewView extends View {
             <div class="preview__data">
                 <h4 class="preview__title">${recipe.title}</h4>
                 <p class="preview__publisher">${recipe.publisher}</p>
-            </div>
+            <div class="preview__user-generated ${userCreatedRecipe}">
+            <svg>
+              <use href="${iconsPath}#icon-user"></use>
+            </svg>
+          </div>
+          </div>
         </a>
         </li>`
         }).join('');
